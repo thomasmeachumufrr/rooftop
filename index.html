@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Rooftop Simulator V1.0 - Dylan's Night</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Courier New', Courier, monospace; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        /* HUD Superior */
+        #stats { 
+            position: absolute; top: 10px; left: 10px; 
+            color: #0f0; background: rgba(0,0,0,0.7); padding: 10px; border: 1px solid #0f0;
+            font-size: 16px; pointer-events: auto;
+        }
+        
+        /* Balões de Fala */
+        .bubble {
+            position: absolute;
+            background: white; border-radius: 10px; padding: 5px 10px;
+            color: black; font-weight: bold; font-size: 12px;
+            pointer-events: none; transform: translate(-50%, -100%);
+            white-space: nowrap; border: 2px solid black;
+            opacity: 0.9; z-index: 10;
+        }
+        .bubble::after {
+            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -5px;
+            border-width: 5px; border-style: solid; border-color: white transparent transparent transparent;
+        }
+
+        /* Menu de Interação (Pix vs Lista) */
+        #interaction-menu {
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9); border: 2px solid #ff00ff; padding: 20px; text-align: center;
+            pointer-events: auto; z-index: 100;
+        }
+        .btn {
+            display: block; width: 200px; padding: 10px; margin: 10px; cursor: pointer;
+            font-weight: bold; font-size: 18px; border: none;
+        }
+        .btn-pix { background: #00bfa5; color: white; }
+        .btn-list { background: #ff4081; color: white; }
+
+        /* Controles Mobile */
+        #mobile-controls { display: none; pointer-events: auto; }
+        .control-pad { position: absolute; bottom: 20px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        #stick-left { left: 20px; border: 2px solid cyan; }
+        #stick-right { right: 20px; border: 2px solid magenta; }
+        
+        /* Instruções PC */
+        #pc-instructions {
+            position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div id="stats">
+            DRINKS: <span id="drink-count">0</span> 🍸<br>
+            INVITES VENDIDOS: <span id="invites-count">0</span><br>
+            CAIXA (PIX): R$ <span id="money-count">0</span>
+        </div>
+        
+        <div id="interaction-menu">
+            <h2 style="color:white; margin-top:0;">CLIENTE NA PORTA</h2>
+            <button class="btn btn-pix" onclick="processEntry('pix')">COBRAR PIX (R$ 50)</button>
+            <button class="btn btn-list" onclick="processEntry('lista')">LISTA VIP (Grátis)</button>
+        </div>
+
+        <div id="pc-instructions">Clique na tela para começar | WASD para andar | Mouse para olhar</div>
+    </div>
+
+    <div id="mobile-controls">
+        <div id="stick-left" class="control-pad"></div>
+        <div id="stick-right" class="control-pad"></div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+        // --- VARIÁVEIS DO JOGO ---
+        let camera, scene, renderer, controls;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let prevTime = performance.now();
+        const velocity = new THREE.Vector3();
+        const direction = new THREE.Vector3();
+        
+        // Estado do Jogo
+        const gameState = {
+            drinks: 0,
+            invites: 0,
+            money: 0,
+            invitesForNextDrink: 0
+        };
+
+        // Arrays e Listas
+        const npcs = []; // Lista de objetos NPC
+        const speechBubbles = []; // Elementos HTML dos balões
+        const waitingLine = []; // Fila da balada
+        const npcPhrases = [
+            "After no cassiano?", "Alguém tem tabaco?", "Vem sempre aqui amor?", 
+            "Tá tarde já, to indo embora", "Saudade da minha ex", "Essa fila não anda?"
+        ];
+        const npcFiles = ['npc1h.png', 'npc2h.png', 'npc3m.png', 'npc4m.png']; // Seus arquivos
+
+        // Elementos DOM
+        const uiDrinks = document.getElementById('drink-count');
+        const uiInvites = document.getElementById('invites-count');
+        const uiMoney = document.getElementById('money-count');
+        const menuInteraction = document.getElementById('interaction-menu');
+        let currentInteractingNPC = null;
+
+        // Configurações Mobile
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        init();
+        animate();
+
+        function init() {
+            // 1. Cena e Neblina (Atmosfera noturna)
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050510); // Azul noturno muito escuro
+            scene.fog = new THREE.FogExp2(0x050510, 0.02);
+
+            // 2. Câmera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.y = 1.7; // Altura dos olhos do Dylan
+
+            // 3. Renderizador
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // 4. Luzes
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+
+            // Luz da Lua/Rua
+            const streetLight = new THREE.DirectionalLight(0xaaccff, 0.5);
+            streetLight.position.set(-10, 20, -10);
+            streetLight.castShadow = true;
+            scene.add(streetLight);
+
+            // 5. Controles
+            if (!isMobile) {
+                controls = new PointerLockControls(camera, document.body);
+                document.body.addEventListener('click', () => {
+                    if(menuInteraction.style.display !== 'block') controls.lock();
+                });
+                setupKeyboardControls();
+            } else {
+                setupMobileControls();
+                document.getElementById('pc-instructions').style.display = 'none';
+                document.getElementById('mobile-controls').style.display = 'block';
+                camera.rotation.order = 'YXZ'; // Necessário para rotação manual
+            }
+
+            // 6. Construir o Cenário
+            buildEnvironment();
+
+            // 7. Gerar NPCs Iniciais
+            for(let i=0; i<10; i++) spawnNPC();
+
+            // 8. Eventos de Janela
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function buildEnvironment() {
+            const textureLoader = new THREE.TextureLoader();
+
+            // Chão (Asfalto - Rua)
+            const asphaltGeo = new THREE.PlaneGeometry(100, 100);
+            const asphaltMat = new THREE.MeshLambertMaterial({ color: 0x333333 }); // Cinza escuro
+            const asphalt = new THREE.Mesh(asphaltGeo, asphaltMat);
+            asphalt.rotation.x = -Math.PI / 2;
+            scene.add(asphalt);
+
+            // Calçada (Onde fica a fila)
+            const sidewalkGeo = new THREE.PlaneGeometry(20, 100);
+            const sidewalkMat = new THREE.MeshLambertMaterial({ color: 0x999999 }); // Cinza claro
+            const sidewalk = new THREE.Mesh(sidewalkGeo, sidewalkMat);
+            sidewalk.rotation.x = -Math.PI / 2;
+            sidewalk.position.set(10, 0.01, 0); // Levemente acima do asfalto
+            scene.add(sidewalk);
+
+            // Prédio da Balada (Térreo)
+            const buildingGeo = new THREE.BoxGeometry(20, 5, 30);
+            const buildingMat = new THREE.MeshPhongMaterial({ color: 0x111111, side: THREE.DoubleSide }); // Parede preta
+            const building = new THREE.Mesh(buildingGeo, buildingMat);
+            building.position.set(25, 2.5, 0);
+            building.castShadow = true;
+            building.receiveShadow = true;
+            scene.add(building);
+
+            // 2º Andar (Rooftop - Piso)
+            const roofGeo = new THREE.BoxGeometry(20, 0.5, 30);
+            const roofMat = new THREE.MeshPhongMaterial({ color: 0x220000 }); // Piso escuro avermelhado
+            const roof = new THREE.Mesh(roofGeo, roofMat);
+            roof.position.set(25, 5, 0);
+            scene.add(roof);
+
+            // Escada/Rampa para subir
+            const rampGeo = new THREE.BoxGeometry(4, 0.2, 10);
+            const rampMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+            const ramp = new THREE.Mesh(rampGeo, rampMat);
+            ramp.position.set(18, 2.5, 10);
+            ramp.rotation.x = -0.5; // Inclinação
+            scene.add(ramp);
+
+            // Área do DJ Térreo (Luzes e Fumaça)
+            createPartyZone(new THREE.Vector3(25, 1, -10), 0xff0000); // Térreo Vermelho
+            
+            // Área do DJ Rooftop
+            createPartyZone(new THREE.Vector3(25, 6, -10), 0x0000ff); // Rooftop Azul
+
+            // Detalhes do Banheiro (Simplificado - Caixas brancas)
+            const toiletGeo = new THREE.BoxGeometry(1, 1, 1);
+            const toiletMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+            const toilet = new THREE.Mesh(toiletGeo, toiletMat);
+            toilet.position.set(30, 0.5, 12); // Posição dentro do prédio
+            scene.add(toilet);
+        }
+
+        function createPartyZone(position, colorHex) {
+            // Mesa DJ
+            const table = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 1, 1),
+                new THREE.MeshBasicMaterial({ color: 0x222222 })
+            );
+            table.position.copy(position);
+            scene.add(table);
+
+            // Luz Piscante
+            const light = new THREE.PointLight(colorHex, 2, 20);
+            light.position.set(position.x, position.y + 2, position.z);
+            scene.add(light);
+            
+            // Animação da luz (será atualizada no loop)
+            light.userData = { baseIntensity: 2, speed: Math.random() * 0.1 + 0.05 };
+            scene.add(light); // Adicionar à cena, mas precisamos referenciar no array de updates se quisermos piscar complexo.
+            // Para simplificar, vou adicionar lógica de piscar no animate() buscando todas as luzes.
+
+            // Fumaça (Sistema de Partículas Simples)
+            const particleCount = 200;
+            const particlesGeo = new THREE.BufferGeometry();
+            const positions = [];
+            for(let i=0; i<particleCount; i++) {
+                positions.push((Math.random() - 0.5) * 5); // x
+                positions.push(Math.random() * 3);         // y
+                positions.push((Math.random() - 0.5) * 5); // z
+            }
+            particlesGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            const particlesMat = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.1, transparent: true, opacity: 0.3 });
+            const particleSystem = new THREE.Points(particlesGeo, particlesMat);
+            particleSystem.position.copy(position);
+            scene.add(particleSystem);
+        }
+
+        // --- SISTEMA DE NPCS (BILLBOARDING) ---
+        function spawnNPC() {
+            // Escolher imagem aleatória (Note: precisa ter os arquivos na pasta)
+            // Como fallback, usaremos um canvas gerado dinamicamente se a imagem falhar, 
+            // mas o código está preparado para carregar png.
+            
+            const textureLoader = new THREE.TextureLoader();
+            // Tenta carregar imagem, se der erro (404), o ThreeJS avisa no console.
+            const randomFile = npcFiles[Math.floor(Math.random() * npcFiles.length)];
+            const map = textureLoader.load(randomFile);
+
+            const material = new THREE.SpriteMaterial({ map: map });
+            const sprite = new THREE.Sprite(material);
+            
+            // Configurar Tamanho (Assumindo proporção humana)
+            sprite.scale.set(1, 1.8, 1); 
+
+            // Posição Aleatória na RUA (Area negativa do X)
+            sprite.position.set(
+                Math.random() * -20 - 5, // X: Longe da balada
+                0.9, // Y: Metade da altura (centro do sprite)
+                (Math.random() - 0.5) * 50 // Z: Espalhado na rua
+            );
+
+            // Dados do NPC
+            sprite.userData = {
+                state: 'walking_street', // walking_street, waiting_line, inside
+                waitTime: 0,
+                hasInvite: false,
+                id: Math.random()
+            };
+
+            scene.add(sprite);
+            npcs.push(sprite);
+        }
+
+        function updateNPCs(delta) {
+            npcs.forEach(npc => {
+                // Lógica de Movimento
+                if (npc.userData.state === 'walking_street') {
+                    // Anda aleatoriamente na rua
+                    npc.position.z += (Math.random() - 0.5) * 0.1;
+                    // Se o player estiver perto (< 3m) e interagir (vender convite)
+                    const dist = npc.position.distanceTo(camera.position);
+                    
+                    // Simulação simples: Se player encosta, vende convite automático (para simplificar V1)
+                    if (dist < 2.5 && !npc.userData.hasInvite) {
+                        sellInvite(npc);
+                    }
+                } 
+                else if (npc.userData.state === 'waiting_line') {
+                    // Contar tempo de espera
+                    npc.userData.waitTime += delta;
+                    
+                    // Reclamar se > 30s
+                    if (npc.userData.waitTime > 30 && Math.random() < 0.01) {
+                        showSpeechBubble(npc);
+                        npc.userData.waitTime = 0; // Reseta para não spammar
+                    }
+
+                    // Se for o primeiro da fila
+                    if (waitingLine[0] === npc) {
+                        // Lógica de entrada acontece via interação do player com o segurança
+                    }
+                }
+            });
+
+            updateBubbles();
+        }
+
+        function sellInvite(npc) {
+            npc.userData.hasInvite = true;
+            gameState.invites++;
+            gameState.invitesForNextDrink++;
+            
+            uiInvites.innerText = gameState.invites;
+
+            if (gameState.invitesForNextDrink >= 5) {
+                gameState.drinks++;
+                gameState.invitesForNextDrink = 0;
+                uiDrinks.innerText = gameState.drinks;
+                // Efeito sonoro de drink (opcional)
+            }
+
+            // NPC vai para a fila
+            npc.userData.state = 'waiting_line';
+            waitingLine.push(npc);
+            
+            // Posicionar na fila (Calçada X=10)
+            const index = waitingLine.length - 1;
+            npc.position.set(10, 0.9, 10 - (index * 1.5)); // Fila organizada
+        }
+
+        // --- SISTEMA DE BALÕES DE FALA ---
+        function showSpeechBubble(npc) {
+            const phrase = npcPhrases[Math.floor(Math.random() * npcPhrases.length)];
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.innerText = phrase;
+            document.body.appendChild(bubble);
+
+            const bubbleObj = {
+                element: bubble,
+                npc: npc,
+                life: 4.0 // 4 segundos
+            };
+            speechBubbles.push(bubbleObj);
+        }
+
+        function updateBubbles() {
+            // Atualizar posição dos balões para seguir a cabeça do NPC 3D
+            for (let i = speechBubbles.length - 1; i >= 0; i--) {
+                const b = speechBubbles[i];
+                b.life -= 0.016; // Aprox 60fps
+
+                if (b.life <= 0) {
+                    b.element.remove();
+                    speechBubbles.splice(i, 1);
+                    continue;
+                }
+
+                // Projetar posição 3D para 2D
+                const headPos = b.npc.position.clone();
+                headPos.y += 1.0; // Acima da cabeça
+
+                headPos.project(camera);
+
+                const x = (headPos.x * .5 + .5) * window.innerWidth;
+                const y = (-(headPos.y * .5) + .5) * window.innerHeight;
+
+                // Só mostrar se estiver na frente da câmera
+                if (headPos.z < 1) { 
+                    b.element.style.left = `${x}px`;
+                    b.element.style.top = `${y}px`;
+                    b.element.style.display = 'block';
+                } else {
+                    b.element.style.display = 'none';
+                }
+            }
+        }
+
+        // --- INTERAÇÃO NA PORTA ---
+        // Raycaster para detectar clique no primeiro da fila
+        const raycaster = new THREE.Raycaster();
+        const center = new THREE.Vector2(0, 0); // Centro da tela para PC
+
+        function checkInteraction() {
+            if (waitingLine.length === 0) return;
+
+            const firstNPC = waitingLine[0];
+            // Verificar distancia
+            if (camera.position.distanceTo(firstNPC.position) < 4) {
+                // Abrir menu
+                currentInteractingNPC = firstNPC;
+                menuInteraction.style.display = 'block';
+                if (!isMobile) controls.unlock(); // Soltar mouse
+            }
+        }
+        
+        // Funções globais para os botões HTML chamarem
+        window.processEntry = function(type) {
+            if (!currentInteractingNPC) return;
+
+            if (type === 'pix') {
+                gameState.money += 50;
+                uiMoney.innerText = gameState.money;
+            }
+            // Se for lista, entra de graça (não faz nada com dinheiro)
+
+            // Mover NPC para dentro da festa
+            currentInteractingNPC.userData.state = 'inside';
+            currentInteractingNPC.position.set(25 + (Math.random()-0.5)*10, 0.9, (Math.random()-0.5)*10);
+            
+            // Remover da fila
+            waitingLine.shift();
+            // Reorganizar fila visualmente
+            waitingLine.forEach((npc, index) => {
+                npc.position.z = 10 - (index * 1.5); // Avançar fila
+            });
+
+            // Fechar menu
+            menuInteraction.style.display = 'none';
+            currentInteractingNPC = null;
+            if (!isMobile) controls.lock();
+        };
+
+        // --- CONTROLES E INPUT ---
+        function setupKeyboardControls() {
+            const onKeyDown = function (event) {
+                switch (event.code) {
+                    case 'KeyW': moveForward = true; break;
+                    case 'KeyA': moveLeft = true; break;
+                    case 'KeyS': moveBackward = true; break;
+                    case 'KeyD': moveRight = true; break;
+                    case 'Space': 
+                        if (canJump === true) velocity.y += 350; // Opcional: Pulo
+                        break;
+                    case 'KeyE': checkInteraction(); break; // Botão de ação
+                }
+            };
+            const onKeyUp = function (event) {
+                switch (event.code) {
+                    case 'KeyW': moveForward = false; break;
+                    case 'KeyA': moveLeft = false; break;
+                    case 'KeyS': moveBackward = false; break;
+                    case 'KeyD': moveRight = false; break;
+                }
+            };
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+        }
+
+        function setupMobileControls() {
+            // Implementação simples de Touch para mover e olhar
+            // Lado Esquerdo: Move. Lado Direito: Olha.
+            const stickLeft = document.getElementById('stick-left');
+            const stickRight = document.getElementById('stick-right');
+            
+            // Lógica simplificada: tocar no pad ativa o movimento
+            stickLeft.addEventListener('touchstart', () => moveForward = true);
+            stickLeft.addEventListener('touchend', () => moveForward = false);
+            
+            // Para olhar (stickRight), precisamos capturar o touchmove na tela toda
+            // ou usar uma área dedicada. Para V1, vamos fazer: toque na metade direita da tela gira a camera.
+            let touchStartX = 0;
+            document.addEventListener('touchstart', (e) => {
+                if(e.touches[0].clientX > window.innerWidth / 2) {
+                    touchStartX = e.touches[0].clientX;
+                }
+                // Check interaction on tap
+                if (e.touches.length === 1) checkInteraction(); 
+            });
+            document.addEventListener('touchmove', (e) => {
+                if(e.touches[0].clientX > window.innerWidth / 2) {
+                    const deltaX = e.touches[0].clientX - touchStartX;
+                    camera.rotation.y -= deltaX * 0.005;
+                    touchStartX = e.touches[0].clientX;
+                }
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // --- LOOP PRINCIPAL ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = performance.now();
+            const delta = (time - prevTime) / 1000;
+
+            if (!isMobile && controls.isLocked === true) {
+                // Física de Movimento PC
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+                direction.z = Number(moveForward) - Number(moveBackward);
+                direction.x = Number(moveRight) - Number(moveLeft);
+                direction.normalize();
+
+                if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+                if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+
+                controls.moveRight(-velocity.x * delta);
+                controls.moveForward(-velocity.z * delta);
+            } else if (isMobile) {
+                // Movimento Simples Mobile
+                if (moveForward) {
+                    camera.translateZ(-5 * delta);
+                }
+            }
+
+            // Manter Dylan no chão ou subir rampa (Colisão muito básica baseada em altura X posição)
+            // Se estiver na área da rampa/escada
+            if (camera.position.x > 16 && camera.position.x < 20 && camera.position.z > 5 && camera.position.z < 15) {
+                camera.position.y = Math.max(1.7, (camera.position.z - 5) * 0.5 + 1.7);
+            } else if (camera.position.y > 3 && (camera.position.x < 15 || camera.position.x > 35)) {
+                // Caiu do segundo andar
+                camera.position.y = 1.7; 
+            }
+
+            // Animar Luzes (Efeito Balada)
+            scene.traverse(function(object) {
+                if (object.isPointLight) {
+                   object.intensity = object.userData.baseIntensity + Math.sin(time * 0.005) * 2;
+                }
+            });
+
+            // Atualizar NPCs e Balões
+            updateNPCs(delta);
+            
+            // Gerar novos NPCs na rua se estiver vazio
+            if (npcs.length < 20) spawnNPC();
+
+            prevTime = time;
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
