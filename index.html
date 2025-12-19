@@ -3,78 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rooftop Simulator V4.0 - Performance & Cars</title>
+    <title>Rooftop Simulator V5.0 - The Real Nightclub</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
         
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        
+        /* HUD Moderno */
         #stats { 
             position: absolute; top: 20px; left: 20px; 
-            background: rgba(0,0,0,0.85); 
-            padding: 15px; border-radius: 8px; border-left: 5px solid #00ff00;
-            color: white; font-weight: bold; font-size: 14px;
-            pointer-events: auto; backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            padding: 20px; border-radius: 12px; border-bottom: 4px solid #ff0055;
+            color: white; font-weight: 700; font-size: 14px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            pointer-events: auto;
         }
+        #stats div { margin-bottom: 8px; }
 
+        /* Mira */
         #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
-            background: white; border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
+            background: rgba(255,255,255,0.8); border-radius: 50%;
             transform: translate(-50%, -50%); pointer-events: none;
-            box-shadow: 0 0 4px black;
+            border: 2px solid rgba(0,0,0,0.5);
         }
 
+        /* Menu Interativo */
         #interaction-menu {
             display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: linear-gradient(to bottom, #1a1a1a, #000); 
-            border: 2px solid #00ff00; padding: 40px; text-align: center;
-            pointer-events: auto; z-index: 100; border-radius: 15px;
-            box-shadow: 0 0 50px rgba(0, 255, 0, 0.2);
+            background: linear-gradient(135deg, #1a1a2e, #16213e); 
+            border: 1px solid rgba(255,255,255,0.1); padding: 40px; text-align: center;
+            pointer-events: auto; z-index: 100; border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         .btn {
-            display: block; width: 260px; padding: 15px; margin: 15px auto; cursor: pointer;
-            font-weight: bold; font-size: 16px; border: none; text-transform: uppercase; border-radius: 4px;
-            transition: 0.2s;
+            display: block; width: 100%; padding: 15px 30px; margin: 15px 0; cursor: pointer;
+            font-weight: 800; font-size: 16px; border: none; text-transform: uppercase; border-radius: 50px;
+            transition: 0.3s; letter-spacing: 1px;
         }
-        .btn-pix { background: #00bfa5; color: #fff; }
-        .btn-pix:hover { background: #00e676; transform: scale(1.05); }
-        .btn-list { background: #ff4081; color: white; }
-        .btn-list:hover { background: #ff80ab; transform: scale(1.05); }
+        .btn-pix { background: linear-gradient(to right, #00b09b, #96c93d); color: #fff; box-shadow: 0 5px 15px rgba(0,176,155,0.4); }
+        .btn-pix:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,176,155,0.6); }
+        .btn-list { background: linear-gradient(to right, #ff5f6d, #ffc371); color: white; box-shadow: 0 5px 15px rgba(255,95,109,0.4); }
+        .btn-list:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,95,109,0.6); }
 
         #instructions {
-            position: absolute; bottom: 20px; width: 100%; text-align: center;
-            color: rgba(255,255,255,0.7); font-size: 12px;
+            position: absolute; bottom: 30px; width: 100%; text-align: center;
+            color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 600;
         }
         
         /* Mobile */
         #mobile-controls { display: none; pointer-events: auto; }
-        .control-pad { position: absolute; bottom: 40px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        .control-pad { position: absolute; bottom: 40px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
         #stick-left { left: 30px; }
+        .jump-btn { position:absolute; bottom:50px; right:30px; width:80px; height:80px; background:linear-gradient(135deg, #ff0055, #ff5500); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; box-shadow: 0 5px 15px rgba(255,0,85,0.4); }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="ui-layer">
         <div id="crosshair"></div>
         <div id="stats">
-            <div>🍸 DRINKS: <span id="drink-count">0</span></div>
+            <div style="color:#ff0055">ROOFTOP SIM V5.0</div>
+            <div>🍸 DRINKS: <span id="drink-count" style="color:#00ffcc">0</span></div>
             <div>🎫 CONVITES: <span id="invites-count">0</span></div>
             <div>💲 CAIXA: R$ <span id="money-count">0</span></div>
-            <div style="font-size:10px; color:#aaa; margin-top:5px;">V4.0 OPTIMIZED</div>
         </div>
         
         <div id="interaction-menu">
-            <h2 style="color:white; margin-top:0;">CLIENTE NA FILA</h2>
+            <h2 style="color:white; margin-top:0; font-weight:800; letter-spacing: 2px;">ACESSO AO EVENTO</h2>
             <button class="btn btn-pix" onclick="processEntry('pix')">COBRAR PIX (R$ 50)</button>
             <button class="btn btn-list" onclick="processEntry('lista')">LISTA VIP (Grátis)</button>
         </div>
 
-        <div id="instructions">Clique na tela para entrar | WASD Andar | Espaço Pular | Mouse Olhar</div>
+        <div id="instructions">Clique para focar | WASD Move | ESPAÇO Pula | E Interage</div>
     </div>
 
     <div id="mobile-controls">
         <div id="stick-left" class="control-pad"></div>
-        <div style="position:absolute; bottom:50px; right:30px; width:80px; height:80px; background:rgba(0,255,0,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;" onclick="jump()">PULAR</div>
+        <div class="jump-btn" onclick="jump()">PULAR</div>
     </div>
 
     <script type="importmap">
@@ -92,470 +98,358 @@
         import { Capsule } from 'three/addons/math/Capsule.js';
         import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 
-        // --- GERADOR DE TEXTURAS (Melhorado e Otimizado) ---
-        function createTexture(type) {
+        // --- GERADOR DE TEXTURAS PROCEDURAIS V5 ---
+        function createTexture(type, color1, color2) {
             const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512; // Reduzido para 512 para performance
+            canvas.width = 512; canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            if (type === 'asphalt') {
-                ctx.fillStyle = '#111'; ctx.fillRect(0,0,512,512);
-                ctx.fillStyle = '#222'; 
-                for(let i=0; i<10000; i++) ctx.fillRect(Math.random()*512, Math.random()*512, 2, 2);
-            } 
-            else if (type === 'sidewalk') {
-                ctx.fillStyle = '#999'; ctx.fillRect(0,0,512,512);
-                ctx.strokeStyle = '#777'; ctx.lineWidth = 2;
-                for(let x=0; x<512; x+=64) {
-                    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,512); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(0,x); ctx.lineTo(512,x); ctx.stroke();
+            if (type === 'concrete') {
+                ctx.fillStyle = color1; ctx.fillRect(0,0,512,512);
+                for(let i=0; i<50000; i++) {
+                    ctx.fillStyle = Math.random()>0.5 ? color2 : color1;
+                    ctx.globalAlpha = 0.1; ctx.fillRect(Math.random()*512, Math.random()*512, 2, 2);
                 }
-            }
-            else if (type === 'brick') {
-                ctx.fillStyle = '#202020'; ctx.fillRect(0,0,512,512);
-                ctx.fillStyle = '#303030';
-                for(let y=0; y<512; y+=32) {
-                    let off = (y/32)%2===0 ? 0 : 32;
-                    for(let x=-32; x<512; x+=64) ctx.fillRect(x+off, y+1, 60, 30);
-                }
-            }
-            else if (type === 'wood') {
-                ctx.fillStyle = '#3e2723'; ctx.fillRect(0,0,512,512);
-                ctx.strokeStyle = '#2d1b18'; ctx.lineWidth=1;
-                for(let i=0; i<512; i+=40) {
+            } else if (type === 'wood_planks') {
+                ctx.fillStyle = color1; ctx.fillRect(0,0,512,512);
+                ctx.strokeStyle = color2; ctx.lineWidth = 2;
+                for(let i=0; i<512; i+=64) {
                     ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(512,i); ctx.stroke();
-                    ctx.fillStyle = (i%80===0)?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.05)';
-                    ctx.fillRect(0,i,512,40);
+                     // Variação de cor nas tábuas
+                    ctx.fillStyle = Math.random()>0.5 ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+                    ctx.fillRect(0, i+2, 512, 60);
+                }
+            } else if (type === 'stars') {
+                ctx.fillStyle = '#000'; ctx.fillRect(0,0,512,512);
+                ctx.fillStyle = '#fff';
+                for(let i=0; i<1000; i++) {
+                    const size = Math.random()*1.5;
+                    ctx.fillRect(Math.random()*512, Math.random()*512, size, size);
                 }
             }
 
             const tex = new THREE.CanvasTexture(canvas);
             tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
-            if(type === 'asphalt') tex.repeat.set(10,10);
-            if(type === 'sidewalk') tex.repeat.set(2,10);
-            if(type === 'brick') tex.repeat.set(4,2);
             return tex;
         }
 
-        const textures = {
-            asphalt: createTexture('asphalt'),
-            sidewalk: createTexture('sidewalk'),
-            brick: createTexture('brick'),
-            wood: createTexture('wood')
+        const tex = {
+            asphalt: createTexture('concrete', '#1a1a1a', '#2a2a2a'),
+            sidewalk: createTexture('concrete', '#888888', '#999999'),
+            wallInternal: createTexture('concrete', '#222222', '#333333'),
+            floorWood: createTexture('wood_planks', '#3e2723', '#2d1b18'),
+            stars: createTexture('stars', null, null)
         };
+        tex.asphalt.repeat.set(20,20); tex.sidewalk.repeat.set(5,20);
+        tex.wallInternal.repeat.set(4,4); tex.floorWood.repeat.set(8,8);
 
-        // --- ENGINE ---
-        let camera, scene, renderer;
-        const clock = new THREE.Clock();
+        // --- ENGINE VARIABLES ---
+        let camera, scene, renderer, clock;
         const worldOctree = new Octree();
-        const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1, 0 ), 0.35 );
+        const playerCollider = new Capsule(new THREE.Vector3(0, 0.35, 0), new THREE.Vector3(0, 1, 0), 0.35);
         const playerVelocity = new THREE.Vector3();
         const playerDirection = new THREE.Vector3();
-        let playerOnFloor = false;
-        const GRAVITY = 30;
+        let playerOnFloor = false; const GRAVITY = 30;
         const keyStates = {};
-        const npcs = [];
-        const waitingLine = [];
-        
-        const gameState = { drinks: 0, invites: 0, money: 0 };
-        const uiDrinks = document.getElementById('drink-count');
-        const uiInvites = document.getElementById('invites-count');
-        const uiMoney = document.getElementById('money-count');
-        
+        const npcs = [], waitingLine = [], movingLights = [];
+        const gameState = { drinks: 0, invites: 0, money: 0, invitesForDrink: 0 };
         let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 
         init();
         animate();
 
         function init() {
-            RectAreaLightUniformsLib.init();
-
+            RectAreaLightUniformsLib.init(); clock = new THREE.Clock();
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x020205);
-            scene.fog = new THREE.Fog(0x020205, 0, 50);
+            // CÉU ESTRELADO
+            const skyGeo = new THREE.SphereGeometry(500, 32, 32);
+            const skyMat = new THREE.MeshBasicMaterial({ map: tex.stars, side: THREE.BackSide });
+            scene.add(new THREE.Mesh(skyGeo, skyMat));
+            // Lua
+            const moon = new THREE.Mesh(new THREE.CircleGeometry(20, 32), new THREE.MeshBasicMaterial({color:0xffffcc}));
+            moon.position.set(-100, 200, -300); scene.add(moon);
 
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
             camera.rotation.order = 'YXZ';
-
-            renderer = new THREE.WebGLRenderer({ antialias: false }); // False para performance
+            renderer = new THREE.WebGLRenderer({ antialias: true }); // Antialias ligado para qualidade
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.BasicShadowMap; // Sombra leve
+            renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
             document.body.appendChild(renderer.domElement);
 
-            // --- ILUMINAÇÃO OTIMIZADA ---
-            // Ambiente mais forte para evitar escuridão total
-            const ambient = new THREE.HemisphereLight(0x8888aa, 0x111111, 0.5);
-            scene.add(ambient);
+            // ILUMINAÇÃO AMBIENTE
+            const hemiLight = new THREE.HemisphereLight(0x444488, 0x000000, 0.2); scene.add(hemiLight);
 
-            // Luz da Lua (Principal fonte de sombra externa)
-            const moonLight = new THREE.DirectionalLight(0xaaccff, 0.8);
-            moonLight.position.set(-20, 50, -20);
-            moonLight.castShadow = true;
-            moonLight.shadow.camera.top = 30;
-            moonLight.shadow.camera.bottom = -30;
-            moonLight.shadow.camera.left = -30;
-            moonLight.shadow.camera.right = 30;
-            scene.add(moonLight);
-
-            // --- CONSTRUÇÃO DO NÍVEL (FÍSICO) ---
+            // --- CONSTRUÇÃO DO NÍVEL FÍSICO (MAIOR E MELHOR) ---
             const levelGroup = new THREE.Group();
+            const wallMat = new THREE.MeshStandardMaterial({ map: tex.wallInternal, roughness: 0.9 });
+            const floorMat = new THREE.MeshStandardMaterial({ map: tex.floorWood, roughness: 0.5, metalness: 0.1 });
 
-            // 1. Rua (Y = 0)
-            const street = new THREE.Mesh(new THREE.BoxGeometry(100, 1, 100), new THREE.MeshStandardMaterial({ map: textures.asphalt, roughness: 0.9 }));
-            street.position.y = -0.5;
-            street.receiveShadow = true;
-            levelGroup.add(street);
+            // 1. Externo (Rua/Calçada)
+            const street = new THREE.Mesh(new THREE.BoxGeometry(200, 1, 200), new THREE.MeshStandardMaterial({map:tex.asphalt}));
+            street.position.y = -0.5; levelGroup.add(street);
+            const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(25, 0.4, 200), new THREE.MeshStandardMaterial({map:tex.sidewalk}));
+            sidewalk.position.set(12.5, -0.2, 0); levelGroup.add(sidewalk);
 
-            // 2. Calçada (Y = 0.15 - Elevada para não piscar)
-            const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(15, 0.3, 100), new THREE.MeshStandardMaterial({ map: textures.sidewalk }));
-            sidewalk.position.set(10, -0.15 + 0.3, 0); // Topo no 0.15
-            sidewalk.receiveShadow = true;
-            levelGroup.add(sidewalk);
+            // 2. Estrutura Principal (Mais Larga: 30x40)
+            const bWidth = 30, bDepth = 40, bHeight = 10; const bX = 30, bZ = 0;
+            // Pisos
+            const floor1 = new THREE.Mesh(new THREE.BoxGeometry(bWidth-1, 0.2, bDepth-1), floorMat);
+            floor1.position.set(bX, 0.1, bZ); levelGroup.add(floor1);
+            const floor2 = new THREE.Mesh(new THREE.BoxGeometry(bWidth-1, 0.2, bDepth-1), floorMat);
+            floor2.position.set(bX, 6, bZ); levelGroup.add(floor2);
 
-            // 3. Prédio (Paredes)
-            const wallMat = new THREE.MeshStandardMaterial({ map: textures.brick, roughness: 0.6 });
-            
-            // Estrutura
+            // Paredes Térreo e Rooftop (Laterais e Fundo)
             const walls = [
-                // Fundo
-                { s: [1, 10, 30], p: [30, 5, 0] },
-                // Laterais
-                { s: [15, 10, 1], p: [22.5, 5, -15] },
-                { s: [15, 10, 1], p: [22.5, 5, 15] },
-                // Frente (com porta)
-                { s: [1, 10, 12], p: [15, 5, -9] }, // Lado Esq
-                { s: [1, 10, 12], p: [15, 5, 9] },  // Lado Dir
-                { s: [1, 4, 6], p: [15, 8, 0] }     // Viga porta
+                {s:[1, bHeight, bDepth], p:[bX + bWidth/2, bHeight/2, bZ]}, // Dir
+                {s:[1, bHeight, bDepth], p:[bX - bWidth/2, bHeight/2, bZ]}, // Esq
+                {s:[bWidth, bHeight, 1], p:[bX, bHeight/2, bZ - bDepth/2]}, // Fundo
             ];
-
             walls.forEach(w => {
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(...w.s), wallMat);
-                mesh.position.set(...w.p);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                levelGroup.add(mesh);
+                const mesh = new THREE.Mesh(new THREE.BoxGeometry(...w.s), wallMat); mesh.position.set(...w.p);
+                mesh.castShadow=true; mesh.receiveShadow=true; levelGroup.add(mesh);
             });
+            // Parede Frontal (Com entrada)
+            const wFront1 = new THREE.Mesh(new THREE.BoxGeometry(10, bHeight, 1), wallMat); wFront1.position.set(bX-10, bHeight/2, bZ+bDepth/2); levelGroup.add(wFront1);
+            const wFront2 = new THREE.Mesh(new THREE.BoxGeometry(10, bHeight, 1), wallMat); wFront2.position.set(bX+10, bHeight/2, bZ+bDepth/2); levelGroup.add(wFront2);
+            const wFrontTop = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 1), wallMat); wFrontTop.position.set(bX, 8, bZ+bDepth/2); levelGroup.add(wFrontTop);
 
-            // 4. Pisos Internos
-            const floorMat = new THREE.MeshStandardMaterial({ map: textures.wood, roughness: 0.2 });
-            // Térreo (Y = 0.2 - Acima da calçada para não piscar)
-            const floor1 = new THREE.Mesh(new THREE.BoxGeometry(14, 0.2, 29), floorMat);
-            floor1.position.set(22.5, 0.2, 0);
-            levelGroup.add(floor1);
-
-            // Rooftop (Y = 5)
-            const floor2 = new THREE.Mesh(new THREE.BoxGeometry(14, 0.2, 29), floorMat);
-            floor2.position.set(22.5, 5, 0);
-            levelGroup.add(floor2);
-
-            // 5. Rampa (Redesenhada: Mais suave e mais larga)
-            const rampLen = 14; 
-            const rampHeight = 4.8; 
-            // Geometria customizada para rampa suave
-            const rampShape = new THREE.BoxGeometry(4, 0.2, rampLen);
-            const ramp = new THREE.Mesh(rampShape, new THREE.MeshStandardMaterial({color: 0x333}));
-            // Posicionada na lateral direita interna
-            ramp.position.set(19, 2.6, 10);
-            ramp.rotation.x = -Math.asin(rampHeight / rampLen); // Inclinação correta
+            // 3. RAMPA DE ACESSO CORRIGIDA (Mais larga, ângulo suave)
+            const rampLen = 20, rampWidth = 6, rampRise = 5.9;
+            const rampGeo = new THREE.BoxGeometry(rampWidth, 0.2, rampLen);
+            const rampMat = new THREE.MeshStandardMaterial({color:0x333333, roughness:1});
+            const ramp = new THREE.Mesh(rampGeo, rampMat);
+            // Posiciona o centro da rampa para que a base toque o chão e o topo toque o 2º andar
+            ramp.position.set(bX + 8, rampRise/2 + 0.1, bZ + 5); 
+            ramp.rotation.x = -Math.asin(rampRise/rampLen);
             levelGroup.add(ramp);
 
-            // GERAR CARROS NA RUA (Colisão Inclusa)
-            generateCars(levelGroup);
+            // 4. Paredes dos Banheiros (Térreo Fundo)
+            const wcDivisor = new THREE.Mesh(new THREE.BoxGeometry(1, 6, 15), wallMat);
+            wcDivisor.position.set(bX, 3, bZ - bDepth/2 + 7.5); levelGroup.add(wcDivisor);
+            const wcFront = new THREE.Mesh(new THREE.BoxGeometry(bWidth, 6, 1), wallMat);
+            wcFront.position.set(bX, 3, bZ - bDepth/2 + 15); 
+            // Buracos para portas seriam complexos com BoxGeometry, faremos paredes parciais
+            // Simplificação: Paredes sólidas para o colisor, visualmente colocaremos portas depois.
+            levelGroup.add(wcFront);
 
-            // Finalizar Octree
+            // 5. Parapeitos Rooftop (Segurança)
+            const railMat = new THREE.MeshStandardMaterial({color:0x555555, metalness:0.8});
+            const railFront = new THREE.Mesh(new THREE.BoxGeometry(bWidth, 1.2, 0.2), railMat);
+            railFront.position.set(bX, 6.6, bZ+bDepth/2-0.5); levelGroup.add(railFront);
+            // (As outras paredes já servem de parapeito alto)
+
             scene.add(levelGroup);
             worldOctree.fromGraphNode(levelGroup);
 
-            // --- DETALHES VISUAIS (Sem colisão) ---
+            // --- DECORAÇÃO & ILUMINAÇÃO DINÂMICA (Sem Colisão) ---
             
-            // Iluminação Interna (PointLights sem sombra para performance)
-            // Térreo
-            const pLight1 = new THREE.PointLight(0xff0044, 1.5, 20);
-            pLight1.position.set(22, 3, -5);
-            scene.add(pLight1);
-            
-            // Rooftop
-            const pLight2 = new THREE.PointLight(0x0044ff, 1.5, 20);
-            pLight2.position.set(22, 8, -5);
-            scene.add(pLight2);
-
             // Letreiro Neon
-            createNeonSign("ROOFTOP", 0xff00ff, 14.4, 7, 0);
-            
-            // Fumaça Estilizada (Sprites simples)
-            createSmoke(22, 1, -10, 0xff0044);
+            createNeonSign("ROOFTOP CLUB", 0xff00aa, bX, 7, bZ+bDepth/2+0.6);
+            // Placas WC
+            createSign("WC H", bX-5, 4, bZ-bDepth/2+15.6, 0x0055ff);
+            createSign("WC M", bX+5, 4, bZ-bDepth/2+15.6, 0xff5500);
 
-            // Inputs
+            // PALCOS DJ & SOM (Térreo e Rooftop)
+            setupDJBooth(new THREE.Vector3(bX, 0.2, bZ-10), 0xff0055); // Térreo Vermelho
+            setupDJBooth(new THREE.Vector3(bX, 6.2, bZ-10), 0x00aaff); // Rooftop Azul
+
+            // ÁREAS LOUNGE (Sofás e Mesas)
+            setupLounge(new THREE.Vector3(bX-10, 0.2, bZ+10));
+            setupLounge(new THREE.Vector3(bX+10, 6.2, bZ+10));
+
+            // CARROS NA RUA
+            generateCars();
+
             setupInputs();
-
-            // NPCs
-            for(let i=0; i<20; i++) spawnNPC();
-
+            for(let i=0; i<25; i++) spawnNPC(); // Mais NPCs
             window.addEventListener('resize', onWindowResize);
         }
 
-        // --- SISTEMA DE CARROS ---
-        function generateCars(group) {
-            const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xffffff, 0x333333];
-            
-            for(let i=0; i<6; i++) {
-                const zPos = -40 + (i * 15);
-                const carColor = colors[i % colors.length];
-                
-                // Carroceria
-                const chassis = new THREE.Mesh(new THREE.BoxGeometry(4.5, 1.2, 9), new THREE.MeshStandardMaterial({color: carColor}));
-                chassis.position.set(0, 0.8, zPos);
-                group.add(chassis);
-                
-                // Cabine
-                const cabin = new THREE.Mesh(new THREE.BoxGeometry(4, 1, 5), new THREE.MeshStandardMaterial({color: 0x111111}));
-                cabin.position.set(0, 1.8, zPos);
-                group.add(cabin);
+        // --- SISTEMAS DE DECORAÇÃO ---
+        function setupDJBooth(pos, color) {
+            const group = new THREE.Group(); group.position.copy(pos);
+            // Mesa
+            const table = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 1.5), new THREE.MeshStandardMaterial({color:0x111}));
+            table.position.y = 0.6; group.add(table);
+            // Caixas de Som
+            const speakerGeo = new THREE.BoxGeometry(1.5, 3, 1.5);
+            const speakerMat = new THREE.MeshStandardMaterial({color:0x222});
+            const s1 = new THREE.Mesh(speakerGeo, speakerMat); s1.position.set(-3.5, 1.5, 0); group.add(s1);
+            const s2 = new THREE.Mesh(speakerGeo, speakerMat); s2.position.set(3.5, 1.5, 0); group.add(s2);
+            // Treliça de Luzes
+            const truss = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshStandardMaterial({color:0x555, metalness:0.8}));
+            truss.position.set(0, 5, 0); group.add(truss);
 
-                // Rodas (4)
-                const wheelGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.4, 12);
-                const wheelMat = new THREE.MeshStandardMaterial({color: 0x000000});
-                
-                const w1 = new THREE.Mesh(wheelGeo, wheelMat); w1.rotation.z = Math.PI/2; w1.position.set(-2.2, 0.6, zPos-2.5); group.add(w1);
-                const w2 = new THREE.Mesh(wheelGeo, wheelMat); w2.rotation.z = Math.PI/2; w2.position.set(2.2, 0.6, zPos-2.5); group.add(w2);
-                const w3 = new THREE.Mesh(wheelGeo, wheelMat); w3.rotation.z = Math.PI/2; w3.position.set(-2.2, 0.6, zPos+2.5); group.add(w3);
-                const w4 = new THREE.Mesh(wheelGeo, wheelMat); w4.rotation.z = Math.PI/2; w4.position.set(2.2, 0.6, zPos+2.5); group.add(w4);
+            // ILUMINAÇÃO DINÂMICA REAL (Moving Heads)
+            // Adiciona 4 luzes que se movem por palco
+            for(let i=0; i<4; i++) {
+                const xOffset = (i-1.5)*2.5;
+                createMovingHead(new THREE.Vector3(pos.x+xOffset, pos.y+5, pos.z), color, i*0.5);
             }
+            scene.add(group);
+        }
+
+        function createMovingHead(pos, color, timeOffset) {
+            // O aparelho físico
+            const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.8), new THREE.MeshStandardMaterial({color:0x333}));
+            fixture.position.copy(pos); fixture.rotation.x = Math.PI/2;
+            scene.add(fixture);
+
+            // A LUZ Real
+            const spot = new THREE.SpotLight(color, 100);
+            spot.position.copy(pos);
+            spot.angle = 0.4; spot.penumbra = 0.3; spot.decay = 1.5; distance: 50;
+            spot.castShadow = true; // Sombra dinâmica! (Pode pesar no mobile)
+            spot.shadow.mapSize.set(512, 512); // Resolução baixa para performance
+            
+            const target = new THREE.Object3D();
+            spot.target = target;
+            scene.add(spot); scene.add(target);
+
+            movingLights.push({ spot, target, posBase: pos.clone(), offset: timeOffset });
+        }
+
+        function setupLounge(pos) {
+            const group = new THREE.Group(); group.position.copy(pos);
+            // Sofá em L
+            const sofaMat = new THREE.MeshStandardMaterial({color:0x880022, roughness:1});
+            const s1 = new THREE.Mesh(new THREE.BoxGeometry(6, 0.8, 2), sofaMat); s1.position.set(0, 0.4, -2); group.add(s1);
+            const s2 = new THREE.Mesh(new THREE.BoxGeometry(2, 0.8, 4), sofaMat); s2.position.set(-2, 0.4, 1); group.add(s2);
+            // Mesinha de centro
+            const table = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 0.5, 16), new THREE.MeshStandardMaterial({color:0x111, metalness:0.5, roughness:0.2}));
+            table.position.set(0.5, 0.25, 0.5); group.add(table);
+            scene.add(group);
         }
 
         function createNeonSign(text, color, x, y, z) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#000'; ctx.fillRect(0,0,512,128);
-            ctx.font = 'bold 80px Arial';
-            ctx.fillStyle = '#fff';
-            ctx.shadowColor = '#' + color.toString(16);
-            ctx.shadowBlur = 20;
-            ctx.textAlign = 'center';
-            ctx.fillText(text, 256, 90);
-            
+            const canvas = document.createElement('canvas'); canvas.width=512; canvas.height=128;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,512,128);
+            ctx.font='900 80px Montserrat'; ctx.fillStyle='#fff'; ctx.textAlign='center';
+            ctx.shadowColor='#'+color.toString(16); ctx.shadowBlur=30; ctx.fillText(text, 256, 90);
             const tex = new THREE.CanvasTexture(canvas);
-            const mat = new THREE.MeshBasicMaterial({map: tex, transparent: true});
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 2), mat);
-            mesh.position.set(x, y, z);
-            mesh.rotation.y = -Math.PI/2;
-            scene.add(mesh);
-
-            // Luz do letreiro
-            const light = new THREE.PointLight(color, 2, 8);
-            light.position.set(x-1, y, z);
-            scene.add(light);
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(10, 2.5), new THREE.MeshBasicMaterial({map:tex, transparent:true}));
+            mesh.position.set(x,y,z); scene.add(mesh);
+            const light = new THREE.PointLight(color, 5, 15); light.position.set(x,y,z+1); scene.add(light);
+        }
+        function createSign(text, x, y, z, color) {
+            const canvas = document.createElement('canvas'); canvas.width=256; canvas.height=128;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle='#'+color.toString(16); ctx.fillRect(0,0,256,128);
+            ctx.font='900 60px Montserrat'; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(text, 128, 85);
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 1.5), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(canvas)}));
+            mesh.position.set(x,y,z); scene.add(mesh);
         }
 
-        function createSmoke(x, y, z, color) {
-            const pGeo = new THREE.BufferGeometry();
-            const positions = [];
-            for(let i=0; i<30; i++) positions.push((Math.random()-0.5)*10, Math.random()*5, (Math.random()-0.5)*10);
-            pGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            const pMat = new THREE.PointsMaterial({color: color, size: 0.5, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, sizeAttenuation: true});
-            const p = new THREE.Points(pGeo, pMat);
-            p.position.set(x, y, z);
-            scene.add(p);
+        function generateCars() {
+             for(let i=0; i<8; i++) {
+                 const z = -50 + i*15; const color = Math.random()*0xffffff;
+                 const car = new THREE.Group(); car.position.set(Math.random()*-5 - 5, 0.8, z);
+                 car.add(new THREE.Mesh(new THREE.BoxGeometry(4.5, 1, 9), new THREE.MeshStandardMaterial({color:color}))); // Chassis
+                 const cabin = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.8, 5), new THREE.MeshStandardMaterial({color:0x333})); cabin.position.y=0.9; car.add(cabin);
+                 scene.add(car);
+             }
         }
 
-        // --- LÓGICA DO JOGADOR ---
+        // --- GAMEPLAY LOGIC (Player, NPCs) ---
+        // (Mantida da V4, focada na integração com o novo cenário)
         function updatePlayer(dt) {
-            if(playerOnFloor) {
-                const speed = 15;
-                if (keyStates['KeyW']) playerVelocity.add(getForwardVector().multiplyScalar(speed * dt));
-                if (keyStates['KeyS']) playerVelocity.add(getForwardVector().multiplyScalar(-speed * dt));
-                if (keyStates['KeyA']) playerVelocity.add(getSideVector().multiplyScalar(-speed * dt));
-                if (keyStates['KeyD']) playerVelocity.add(getSideVector().multiplyScalar(speed * dt));
-                
-                // Mobile
-                if (isMobile && mobileMove) playerVelocity.add(getForwardVector().multiplyScalar(speed * dt));
-            } else {
-                // Controle aéreo reduzido
-                const speed = 2;
-                if (keyStates['KeyW']) playerVelocity.add(getForwardVector().multiplyScalar(speed * dt));
-            }
+            let speed = playerOnFloor ? 18 : 5; // Mais rápido no chão
+            if (keyStates['KeyW'] || (isMobile && mobileMove)) playerVelocity.add(getForwardVector().multiplyScalar(speed * dt));
+            if (keyStates['KeyS']) playerVelocity.add(getForwardVector().multiplyScalar(-speed * dt));
+            if (keyStates['KeyA']) playerVelocity.add(getSideVector().multiplyScalar(-speed * dt));
+            if (keyStates['KeyD']) playerVelocity.add(getSideVector().multiplyScalar(speed * dt));
             
-            let damping = Math.exp(-4 * dt) - 1;
-            if(!playerOnFloor) {
-                playerVelocity.y -= GRAVITY * dt;
-                damping *= 0.1;
-            }
+            let damping = Math.exp(-8 * dt) - 1; // Mais atrito
+            if(!playerOnFloor) { playerVelocity.y -= GRAVITY * dt; damping *= 0.2; }
             playerVelocity.addScaledVector(playerVelocity, damping);
+            playerCollider.translate(playerVelocity.clone().multiplyScalar(dt));
             
-            const deltaPos = playerVelocity.clone().multiplyScalar(dt);
-            playerCollider.translate(deltaPos);
-            
-            playerCollisions();
-            camera.position.copy(playerCollider.end);
-
-            // Reset se cair do mundo
-            if (camera.position.y < -10) {
-                playerCollider.start.set(0, 0.35, 0);
-                playerCollider.end.set(0, 1, 0);
-                playerCollider.radius = 0.35;
-                playerVelocity.set(0, 0, 0);
-            }
-        }
-
-        function playerCollisions() {
             const result = worldOctree.capsuleIntersect(playerCollider);
             playerOnFloor = false;
             if (result) {
                 playerOnFloor = result.normal.y > 0;
-                if (!playerOnFloor) {
-                    playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
-                }
+                if (!playerOnFloor) playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
                 playerCollider.translate(result.normal.multiplyScalar(result.depth));
             }
+            camera.position.copy(playerCollider.end);
+            if(camera.position.y < -20) { playerCollider.start.set(25,0.35,50); playerCollider.end.set(25,1,50); playerVelocity.set(0,0,0); }
         }
 
-        function getForwardVector() {
-            camera.getWorldDirection(playerDirection);
-            playerDirection.y = 0; playerDirection.normalize();
-            return playerDirection;
-        }
-        function getSideVector() {
-            camera.getWorldDirection(playerDirection);
-            playerDirection.y = 0; playerDirection.normalize();
-            playerDirection.cross(camera.up);
-            return playerDirection;
-        }
+        function getForwardVector() { camera.getWorldDirection(playerDirection); playerDirection.y = 0; playerDirection.normalize(); return playerDirection; }
+        function getSideVector() { camera.getWorldDirection(playerDirection); playerDirection.y = 0; playerDirection.normalize(); playerDirection.cross(camera.up); return playerDirection; }
+        window.jump = function() { if(playerOnFloor) playerVelocity.y = 14; }
 
-        window.jump = function() {
-            if(playerOnFloor) playerVelocity.y = 12;
-        }
-
-        // --- NPCS ---
         function spawnNPC() {
-            // Gerar textura de NPC simples
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = `hsl(${Math.random()*360}, 80%, 50%)`;
-            ctx.fillRect(10, 30, 44, 90); // Roupa
-            ctx.fillStyle = '#ffccaa';
-            ctx.beginPath(); ctx.arc(32, 20, 15, 0, Math.PI*2); ctx.fill(); // Cabeça
-            
-            const tex = new THREE.CanvasTexture(canvas);
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: tex}));
+            const canvas = document.createElement('canvas'); canvas.width=64; canvas.height=128;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle=`hsl(${Math.random()*360},70%,60%)`; ctx.fillRect(10,30,44,90);
+            ctx.fillStyle='#ffdbac'; ctx.beginPath(); ctx.arc(32,20,15,0,Math.PI*2); ctx.fill();
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(canvas)}));
             sprite.scale.set(1, 1.8, 1);
-            
-            // Random na rua
-            sprite.position.set(Math.random() * -15 - 5, 0.9, (Math.random()-0.5)*80);
-            
-            sprite.userData = { state: 'street', speed: Math.random()*0.02 + 0.01, id: Math.random() };
-            scene.add(sprite);
-            npcs.push(sprite);
+            sprite.position.set(Math.random()*10 + 15, 0.9, Math.random()*100 + 50); // Na calçada longe
+            sprite.userData = { state: 'street', id: Math.random() };
+            scene.add(sprite); npcs.push(sprite);
         }
 
         function updateNPCs(dt, time) {
             npcs.forEach(npc => {
                 if(npc.userData.state === 'street') {
-                    npc.position.z += Math.sin(time + npc.userData.id) * 0.01;
-                    // Interação
-                    if(camera.position.distanceTo(npc.position) < 3) {
-                        // Venda automática
-                        gameState.invites++;
-                        uiInvites.innerText = gameState.invites;
-                        npc.userData.state = 'line';
-                        waitingLine.push(npc);
-                        // Reposicionar na fila
-                        const idx = waitingLine.length - 1;
-                        npc.position.set(12, 1.1, 8 - (idx * 1.0)); // Calçada
+                    npc.position.z -= dt * 3; // Andam em direção à balada
+                    if(npc.position.z < 60 && camera.position.distanceTo(npc.position) < 4) {
+                        gameState.invites++; gameState.invitesForDrink++; 
+                        document.getElementById('invites-count').innerText = gameState.invites;
+                        if(gameState.invitesForDrink >= 5) { gameState.drinks++; gameState.invitesForDrink=0; document.getElementById('drink-count').innerText=gameState.drinks; }
+                        npc.userData.state = 'line'; waitingLine.push(npc);
+                        npc.position.set(15, 1.1, 55 - (waitingLine.length * 1.5)); // Fila na entrada
                     }
+                    if(npc.position.z < -50) npc.position.z = 150; // Loop
                 } else if (npc.userData.state === 'dancing') {
-                    // Pulinho de dança
-                    npc.position.y = npc.userData.baseY + Math.abs(Math.sin(time * 5 + npc.userData.id)) * 0.2;
+                    npc.position.y = npc.userData.baseY + Math.abs(Math.sin(time*8 + npc.userData.id))*0.3;
                 }
             });
         }
-
         function checkInteraction() {
-            if(waitingLine.length > 0) {
-                if(camera.position.distanceTo(waitingLine[0].position) < 4) {
-                    document.exitPointerLock();
-                    document.getElementById('interaction-menu').style.display = 'block';
-                }
+            if(waitingLine.length>0 && camera.position.distanceTo(waitingLine[0].position)<5) {
+                document.exitPointerLock(); document.getElementById('interaction-menu').style.display='block';
             }
         }
-
         window.processEntry = function(type) {
-            if(waitingLine.length === 0) return;
+            if(waitingLine.length===0) return;
             const npc = waitingLine.shift();
-            
-            if(type === 'pix') {
-                gameState.money += 50;
-                uiMoney.innerText = gameState.money;
-            }
-            
-            // Mover para dentro (Festa)
-            // 50% chance Térreo ou Rooftop
-            if(Math.random() > 0.5) {
-                npc.position.set(22 + (Math.random()-0.5)*6, 1.1, (Math.random()-0.5)*10); // Térreo
-            } else {
-                npc.position.set(22 + (Math.random()-0.5)*6, 6.0, (Math.random()-0.5)*10); // Rooftop
-            }
-            
-            npc.userData.state = 'dancing';
-            npc.userData.baseY = npc.position.y;
-            
-            // Reorganizar fila
-            waitingLine.forEach((n, i) => n.position.z = 8 - (i * 1.0));
-            
-            document.getElementById('interaction-menu').style.display = 'none';
-            document.body.requestPointerLock();
-        }
+            if(type==='pix') { gameState.money+=50; document.getElementById('money-count').innerText=gameState.money; }
+            // Entra na festa (50% chance rooftop)
+            const isRoof = Math.random()>0.5;
+            npc.position.set(30+(Math.random()-0.5)*20, isRoof?6.9:0.9, (Math.random()-0.5)*30);
+            npc.userData.state = 'dancing'; npc.userData.baseY = npc.position.y;
+            waitingLine.forEach((n,i) => n.position.z = 55 - (i*1.5));
+            document.getElementById('interaction-menu').style.display='none'; document.body.requestPointerLock();
+        };
 
-        // --- INPUTS & EVENTS ---
+        // --- INPUTS ---
         let mobileMove = false;
         function setupInputs() {
-            document.addEventListener('keydown', (e) => {
-                keyStates[e.code] = true;
-                if(e.code === 'Space') jump();
-                if(e.code === 'KeyE') checkInteraction();
-            });
-            document.addEventListener('keyup', (e) => keyStates[e.code] = false);
-            
-            document.addEventListener('mousedown', () => {
-                if(document.getElementById('interaction-menu').style.display !== 'block') document.body.requestPointerLock();
-            });
-            
-            document.body.addEventListener('mousemove', (e) => {
-                if (document.pointerLockElement === document.body) {
-                    camera.rotation.y -= e.movementX / 500;
-                    camera.rotation.x -= e.movementY / 500;
-                }
-            });
-
-            // Mobile
-            const stick = document.getElementById('stick-left');
-            stick.addEventListener('touchstart', (e)=>{e.preventDefault(); mobileMove=true;});
-            stick.addEventListener('touchend', (e)=>{e.preventDefault(); mobileMove=false;});
-            
-            document.addEventListener('touchmove', (e)=>{
-                if(e.touches[0].clientX > window.innerWidth/2) {
-                     camera.rotation.y -= (e.touches[0].clientX - window.innerWidth*0.75) * 0.0001;
-                }
-            });
+            document.addEventListener('keydown', e => { keyStates[e.code]=true; if(e.code==='Space')jump(); if(e.code==='KeyE')checkInteraction(); });
+            document.addEventListener('keyup', e => keyStates[e.code]=false);
+            document.addEventListener('mousedown', () => { if(document.getElementById('interaction-menu').style.display!=='block') document.body.requestPointerLock(); });
+            document.body.addEventListener('mousemove', e => { if(document.pointerLockElement===document.body) { camera.rotation.y-=e.movementX/600; camera.rotation.x-=e.movementY/600; }});
+            const s=document.getElementById('stick-left'); s.addEventListener('touchstart',e=>{e.preventDefault();mobileMove=true;}); s.addEventListener('touchend',e=>{e.preventDefault();mobileMove=false;});
+            document.addEventListener('touchmove',e=>{if(e.touches[0].clientX>window.innerWidth/2) camera.rotation.y-=(e.touches[0].clientX-window.innerWidth*0.75)*0.0002;});
         }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+        function onWindowResize() { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); }
 
         function animate() {
-            const dt = Math.min(0.05, clock.getDelta());
-            const time = clock.getElapsedTime();
+            const dt = Math.min(0.05, clock.getDelta()); const time = clock.getElapsedTime();
+            updatePlayer(dt); updateNPCs(dt, time);
             
-            updatePlayer(dt);
-            updateNPCs(dt, time);
-            
-            renderer.render(scene, camera);
-            requestAnimationFrame(animate);
+            // ATUALIZAÇÃO DAS LUZES DINÂMICAS (Moving Heads)
+            movingLights.forEach(ml => {
+                // Faz o alvo da luz se mover em círculos/elipses pela pista
+                ml.target.position.x = ml.posBase.x + Math.sin(time * 2 + ml.offset) * 10;
+                ml.target.position.z = ml.posBase.z + Math.cos(time * 1.5 + ml.offset) * 15;
+                // Ocasionalmente muda a cor (efeito strobo lento)
+                if(Math.random() > 0.995) ml.spot.color.setHSL(Math.random(), 1, 0.5);
+            });
+
+            renderer.render(scene, camera); requestAnimationFrame(animate);
         }
     </script>
 </body>
