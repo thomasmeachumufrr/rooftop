@@ -3,82 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rooftop Simulator V2.0 - Santos Night</title>
+    <title>Rooftop Simulator V3.0 - Real Physics</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Arial', sans-serif; }
         
-        /* HUD Superior Melhorado */
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        /* HUD PRO */
         #stats { 
             position: absolute; top: 20px; left: 20px; 
-            color: #fff; background: rgba(0, 0, 0, 0.8); 
-            padding: 15px; border-radius: 8px; border-left: 4px solid #00ffcc;
-            font-size: 14px; pointer-events: auto;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        
-        /* Balões de Fala Estilizados */
-        .bubble {
-            position: absolute;
-            background: #fff; border-radius: 15px; padding: 8px 12px;
-            color: #333; font-weight: 700; font-size: 11px;
-            pointer-events: none; transform: translate(-50%, -100%);
-            white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            opacity: 0; transition: opacity 0.3s; z-index: 10;
-        }
-        .bubble.visible { opacity: 1; bottom: 20px; }
-        .bubble::after {
-            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -5px;
-            border-width: 6px; border-style: solid; border-color: #fff transparent transparent transparent;
+            background: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0)); 
+            padding: 15px; border-left: 5px solid #00d2ff;
+            color: white; font-weight: bold; font-family: monospace; font-size: 16px;
+            text-shadow: 0 0 5px #00d2ff; pointer-events: auto;
         }
 
-        /* Menu Interativo Estilo Cyberpunk */
+        /* Mira Central */
+        #crosshair {
+            position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
+            background: rgba(255, 255, 255, 0.5); border-radius: 50%;
+            transform: translate(-50%, -50%); pointer-events: none;
+            border: 1px solid black;
+        }
+
+        /* Menu Interativo */
         #interaction-menu {
             display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, rgba(20,20,20,0.95), rgba(40,40,40,0.95)); 
-            border: 1px solid #ff00ff; padding: 30px; text-align: center;
-            pointer-events: auto; z-index: 100; border-radius: 10px;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);
+            background: rgba(10, 10, 15, 0.95); border: 2px solid #fff; padding: 40px; text-align: center;
+            pointer-events: auto; z-index: 100; box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
         .btn {
-            display: block; width: 220px; padding: 12px; margin: 15px auto; cursor: pointer;
-            font-weight: bold; font-size: 16px; border: none; border-radius: 5px;
-            transition: transform 0.1s, box-shadow 0.1s;
+            display: block; width: 250px; padding: 15px; margin: 20px auto; cursor: pointer;
+            font-weight: bold; font-size: 18px; border: none; text-transform: uppercase;
         }
-        .btn-pix { background: #00ffa3; color: #000; box-shadow: 0 0 10px #00ffa3; }
-        .btn-list { background: #ff0055; color: white; box-shadow: 0 0 10px #ff0055; }
-        .btn:active { transform: scale(0.95); }
+        .btn-pix { background: #00e676; color: #000; box-shadow: 0 0 15px #00e676; }
+        .btn-list { background: #f50057; color: white; box-shadow: 0 0 15px #f50057; }
 
-        /* Controles */
+        /* Instruções */
+        #instructions {
+            position: absolute; bottom: 20px; width: 100%; text-align: center;
+            color: white; font-size: 14px; text-shadow: 1px 1px 2px black;
+        }
+        
         #mobile-controls { display: none; pointer-events: auto; }
-        .control-pad { position: absolute; bottom: 40px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        .control-pad { position: absolute; bottom: 40px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
         #stick-left { left: 30px; }
-        #stick-right { right: 30px; }
-        #pc-instructions { position: absolute; bottom: 20px; width: 100%; text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div id="ui-layer">
+        <div id="crosshair"></div>
         <div id="stats">
-            <div style="font-size: 20px; margin-bottom: 5px;">🍸 <span id="drink-count">0</span></div>
-            <div>Convites: <span id="invites-count">0</span></div>
-            <div style="color: #00ffcc">Caixa: R$ <span id="money-count">0</span></div>
+            <div>🍸 DRINKS: <span id="drink-count">0</span></div>
+            <div>🎫 CONVITES: <span id="invites-count">0</span></div>
+            <div>💲 CAIXA: R$ <span id="money-count">0</span></div>
         </div>
         
         <div id="interaction-menu">
-            <h2 style="color:#fff; margin-top:0; font-family: sans-serif;">FILA - ENTRADA</h2>
+            <h1 style="color:white; font-family: sans-serif; margin-bottom: 30px;">CONTROLE DE ACESSO</h1>
             <button class="btn btn-pix" onclick="processEntry('pix')">COBRAR PIX (R$ 50)</button>
             <button class="btn btn-list" onclick="processEntry('lista')">LISTA VIP (Grátis)</button>
         </div>
 
-        <div id="pc-instructions">CLIQUE PARA JOGAR | [WASD] ANDAR | [MOUSE] OLHAR | [E] INTERAGIR</div>
+        <div id="instructions">Clique para capturar o mouse | WASD para andar | Espaço Pular | Mouse olha</div>
     </div>
 
     <div id="mobile-controls">
         <div id="stick-left" class="control-pad"></div>
-        <div id="stick-right" class="control-pad"></div>
+        <div style="position:absolute; bottom:50px; right:30px; width:80px; height:80px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;" onclick="playerVelocity.y = 15;">PULAR</div>
     </div>
 
     <script type="importmap">
@@ -92,427 +85,420 @@
 
     <script type="module">
         import * as THREE from 'three';
-        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+        import { Octree } from 'three/addons/math/Octree.js';
+        import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
+        import { Capsule } from 'three/addons/math/Capsule.js';
+        import { Reflector } from 'three/addons/objects/Reflector.js';
 
-        // --- GERAÇÃO DE TEXTURAS PROCEDURAIS ---
-        // Cria texturas na memória para não depender de arquivos externos agora
-        function createTexture(type) {
+        // --- SISTEMA DE TEXTURAS AVANÇADO ---
+        function createAdvancedTexture(type) {
             const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512;
+            canvas.width = 1024; canvas.height = 1024;
             const ctx = canvas.getContext('2d');
 
-            if (type === 'asphalt') {
-                ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0,0,512,512);
-                // Ruído
-                for(let i=0; i<50000; i++) {
-                    ctx.fillStyle = Math.random() > 0.5 ? '#222' : '#111';
-                    ctx.fillRect(Math.random()*512, Math.random()*512, 2, 2);
+            if (type === 'brick') {
+                // Tijolos escuros
+                ctx.fillStyle = '#2a2a2a'; ctx.fillRect(0,0,1024,1024);
+                ctx.fillStyle = '#3a3a3a';
+                const w = 120, h = 60;
+                for(let y=0; y<1024; y+=h+4) {
+                    const offset = (y/(h+4)) % 2 === 0 ? 0 : w/2;
+                    for(let x=-w; x<1024; x+=w+4) {
+                        ctx.fillRect(x+offset, y, w, h);
+                    }
                 }
-            } else if (type === 'sidewalk') {
-                ctx.fillStyle = '#888'; ctx.fillRect(0,0,512,512);
-                // Ladrilhos de calçada
-                ctx.strokeStyle = '#666'; ctx.lineWidth = 4;
-                for(let x=0; x<=512; x+=64) {
-                    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,512); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(0,x); ctx.lineTo(512,x); ctx.stroke();
+            } else if (type === 'wood_floor') {
+                // Assoalho de madeira nobre
+                ctx.fillStyle = '#3e2723'; ctx.fillRect(0,0,1024,1024);
+                ctx.strokeStyle = '#1a100e'; ctx.lineWidth = 3;
+                for(let i=0; i<1024; i+=80) {
+                    ctx.fillStyle = (i%160===0)?'#4e342e':'#3e2723';
+                    ctx.fillRect(0, i, 1024, 80);
+                    ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(1024,i); ctx.stroke();
                 }
-                // Sujeira random
-                for(let i=0; i<5000; i++) {
-                    ctx.fillStyle = 'rgba(0,0,0,0.1)';
-                    ctx.fillRect(Math.random()*512, Math.random()*512, 5, 5);
-                }
-            } else if (type === 'wood') {
-                ctx.fillStyle = '#3d2616'; ctx.fillRect(0,0,512,512);
-                // Réguas de madeira
-                for(let i=0; i<512; i+=40) {
-                    ctx.fillStyle = i % 80 === 0 ? '#4a3020' : '#3d2616';
-                    ctx.fillRect(0, i, 512, 38);
-                }
-            } else if (type === 'wall') {
-                ctx.fillStyle = '#050505'; ctx.fillRect(0,0,512,512);
-                // Textura rugosa parede
-                for(let i=0; i<10000; i++) {
-                    ctx.fillStyle = '#111';
-                    ctx.fillRect(Math.random()*512, Math.random()*512, 2, 2);
-                }
-            } else if (type === 'npc_fallback') {
-                // Desenha um "Boneco palito" caso a imagem não carregue
-                ctx.clearRect(0,0,512,512);
-                ctx.fillStyle = '#ff0055';
-                ctx.fillRect(150, 100, 200, 400); // Corpo
-                ctx.fillStyle = '#ffccaa';
-                ctx.beginPath(); ctx.arc(250, 100, 80, 0, Math.PI*2); ctx.fill(); // Cabeça
+            } else if (type === 'sign_rooftop') {
+                // Letreiro Neon
+                ctx.fillStyle = '#000'; ctx.fillRect(0,0,1024,256);
+                ctx.shadowBlur = 20; ctx.shadowColor = '#ff00ff';
+                ctx.fillStyle = '#fff'; ctx.font = "bold 150px Arial"; ctx.textAlign = "center";
+                ctx.fillText("ROOFTOP CLUB", 512, 170);
+            } else if (type === 'sign_wc_h') {
+                ctx.fillStyle = '#003366'; ctx.fillRect(0,0,512,512);
+                ctx.fillStyle = '#fff'; ctx.font = "bold 200px Arial"; ctx.textAlign = "center";
+                ctx.fillText("WC H", 256, 300);
+            } else if (type === 'sign_wc_m') {
+                ctx.fillStyle = '#660033'; ctx.fillRect(0,0,512,512);
+                ctx.fillStyle = '#fff'; ctx.font = "bold 200px Arial"; ctx.textAlign = "center";
+                ctx.fillText("WC M", 256, 300);
             }
 
             const tex = new THREE.CanvasTexture(canvas);
-            tex.wrapS = THREE.RepeatWrapping;
-            tex.wrapT = THREE.RepeatWrapping;
+            tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+            if (type === 'brick' || type === 'wood_floor') tex.repeat.set(4, 4);
             return tex;
         }
 
-        const texAsphalt = createTexture('asphalt');
-        const texSidewalk = createTexture('sidewalk');
-        const texWood = createTexture('wood');
-        const texWall = createTexture('wall');
-        const texNPC = createTexture('npc_fallback');
+        const texBrick = createAdvancedTexture('brick');
+        const texWood = createAdvancedTexture('wood_floor');
+        const texSignRooftop = createAdvancedTexture('sign_rooftop');
+        const texWCH = createAdvancedTexture('sign_wc_h');
+        const texWCM = createAdvancedTexture('sign_wc_m');
 
-        texAsphalt.repeat.set(20, 20);
-        texSidewalk.repeat.set(2, 20);
-        texWood.repeat.set(4, 4);
-        texWall.repeat.set(2, 1);
-
-        // --- CONFIGURAÇÃO DO JOGO ---
-        let camera, scene, renderer, controls;
-        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        let prevTime = performance.now();
-        const velocity = new THREE.Vector3();
-        const direction = new THREE.Vector3();
+        // --- VARIÁVEIS PRINCIPAIS ---
+        let camera, scene, renderer;
+        const clock = new THREE.Clock();
         
-        const gameState = { drinks: 0, invites: 0, money: 0, invitesForNextDrink: 0 };
-        const npcs = [];
-        const speechBubbles = [];
-        const waitingLine = [];
-        const npcPhrases = ["After no cassiano?", "Alguém tem tabaco?", "Vem sempre aqui amor?", "Tá tarde já...", "Cadê meu Uber?"];
-        const npcFiles = ['npc1h.png', 'npc2h.png', 'npc3m.png', 'npc4m.png']; 
+        // FÍSICA (Octree + Capsule)
+        const worldOctree = new Octree();
+        const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1, 0 ), 0.35 );
+        const playerVelocity = new THREE.Vector3();
+        const playerDirection = new THREE.Vector3();
+        let playerOnFloor = false;
+        const GRAVITY = 30;
 
-        // DOM
+        // Input
+        const keyStates = {};
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+
+        // Game Logic
+        const npcs = [];
+        const waitingLine = [];
+        const gameState = { drinks: 0, invites: 0, money: 0 };
         const uiDrinks = document.getElementById('drink-count');
         const uiInvites = document.getElementById('invites-count');
         const uiMoney = document.getElementById('money-count');
-        const menuInteraction = document.getElementById('interaction-menu');
-        let currentInteractingNPC = null;
-        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 
         init();
         animate();
 
         function init() {
+            // Setup Cena
             scene = new THREE.Scene();
-            // Fundo degradê estilo céu urbano noturno
-            scene.background = new THREE.Color(0x0a0a15);
-            scene.fog = new THREE.FogExp2(0x0a0a15, 0.015);
+            scene.background = new THREE.Color(0x050505);
+            scene.fog = new THREE.Fog(0x050505, 0, 40);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 1.7, 5);
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.rotation.order = 'YXZ';
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.shadowMap.type = THREE.VSMShadowMap;
             document.body.appendChild(renderer.domElement);
 
-            // --- ILUMINAÇÃO MELHORADA ---
-            // 1. Luz do Céu (Azulada) vs Chão (Preta)
-            const hemiLight = new THREE.HemisphereLight(0x444488, 0x000000, 0.6);
-            scene.add(hemiLight);
+            // Luzes
+            const ambient = new THREE.HemisphereLight(0x444455, 0x111111, 0.4);
+            scene.add(ambient);
 
-            // 2. Postes de Luz na Rua (Spots)
-            createStreetLight(-5, 8, -5);
-            createStreetLight(-5, 8, -25);
-            createStreetLight(-5, 8, 15);
+            const spotLight = new THREE.SpotLight(0xffffaa, 500);
+            spotLight.position.set(10, 20, 10);
+            spotLight.angle = 1.0; spotLight.penumbra = 0.5; spotLight.castShadow = true;
+            spotLight.shadow.bias = -0.0001;
+            scene.add(spotLight);
 
-            // Controles
-            if (!isMobile) {
-                controls = new PointerLockControls(camera, document.body);
-                document.addEventListener('click', () => {
-                    if(menuInteraction.style.display !== 'block') controls.lock();
-                });
-                setupKeyboardControls();
-            } else {
-                setupMobileControls();
-                document.getElementById('pc-instructions').style.display = 'none';
-                document.getElementById('mobile-controls').style.display = 'block';
-                camera.rotation.order = 'YXZ';
-            }
+            // --- CONSTRUÇÃO DO MUNDO (COLLIDERS) ---
+            // Tudo que o player pode colidir vai aqui
+            const levelGeometry = new THREE.Group();
+            
+            // 1. Chão (Rua)
+            const streetGeo = new THREE.BoxGeometry(100, 1, 100);
+            const streetMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
+            const street = new THREE.Mesh(streetGeo, streetMat);
+            street.position.y = -0.5;
+            street.receiveShadow = true;
+            levelGeometry.add(street);
 
-            buildEnvironment();
+            // 2. Calçada
+            const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(20, 0.2, 100), new THREE.MeshStandardMaterial({ color: 0x555555 }));
+            sidewalk.position.set(10, 0.1, 0);
+            sidewalk.receiveShadow = true;
+            levelGeometry.add(sidewalk);
+
+            // 3. Prédio (Paredes Externas)
+            const buildingMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.6 });
+            
+            // Parede Fundo
+            const w1 = new THREE.Mesh(new THREE.BoxGeometry(1, 8, 30), buildingMat);
+            w1.position.set(30, 4, 0); levelGeometry.add(w1);
+            
+            // Parede Esquerda
+            const w2 = new THREE.Mesh(new THREE.BoxGeometry(15, 8, 1), buildingMat);
+            w2.position.set(22.5, 4, -15); levelGeometry.add(w2);
+            
+            // Parede Direita
+            const w3 = new THREE.Mesh(new THREE.BoxGeometry(15, 8, 1), buildingMat);
+            w3.position.set(22.5, 4, 15); levelGeometry.add(w3);
+            
+            // Parede Frente (com buraco da porta) - Simplificado: duas partes
+            const w4a = new THREE.Mesh(new THREE.BoxGeometry(1, 8, 10), buildingMat);
+            w4a.position.set(15, 4, -10); levelGeometry.add(w4a);
+            const w4b = new THREE.Mesh(new THREE.BoxGeometry(1, 8, 10), buildingMat);
+            w4b.position.set(15, 4, 10); levelGeometry.add(w4b);
+            // Viga em cima da porta
+            const w4c = new THREE.Mesh(new THREE.BoxGeometry(1, 4, 10), buildingMat);
+            w4c.position.set(15, 6, 0); levelGeometry.add(w4c);
+
+            // 4. Pisos Internos (Térreo e Rooftop)
+            const floorMat = new THREE.MeshStandardMaterial({ map: texWood });
+            const floor1 = new THREE.Mesh(new THREE.BoxGeometry(15, 0.2, 29), floorMat);
+            floor1.position.set(22.5, 0.1, 0); levelGeometry.add(floor1);
+
+            const floor2 = new THREE.Mesh(new THREE.BoxGeometry(15, 0.2, 29), floorMat);
+            floor2.position.set(22.5, 4.5, 0); levelGeometry.add(floor2);
+
+            // 5. Escadas/Rampa Física
+            // Em vez de box, usamos geometria inclinada para a cápsula subir liso
+            const rampGeo = new THREE.BoxGeometry(3, 0.5, 12);
+            const ramp = new THREE.Mesh(rampGeo, new THREE.MeshStandardMaterial({color: 0x333333}));
+            ramp.position.set(18, 2.25, 8); // Ajuste fino da posição
+            ramp.rotation.x = -0.4; // Inclinação calculada para alcançar o andar
+            levelGeometry.add(ramp);
+
+            // 6. Banheiros (Paredes internas)
+            const wcWall1 = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 0.2), buildingMat);
+            wcWall1.position.set(27, 2, 8); levelGeometry.add(wcWall1);
+            const wcWall2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4, 5), buildingMat);
+            wcWall2.position.set(24.5, 2, 10.5); levelGeometry.add(wcWall2);
+
+            // ADICIONAR AO MUNDO DE COLISÃO
+            scene.add(levelGeometry);
+            worldOctree.fromGraphNode(levelGeometry);
+
+            // --- DETALHES VISUAIS (NÃO FÍSICOS OU SEPARADOS) ---
+            
+            // Letreiro Rooftop
+            const signPlane = new THREE.Mesh(new THREE.PlaneGeometry(8, 2), new THREE.MeshBasicMaterial({ map: texSignRooftop, transparent: true }));
+            signPlane.position.set(14.4, 6, 0);
+            signPlane.rotation.y = -Math.PI / 2;
+            scene.add(signPlane);
+            const signLight = new THREE.PointLight(0xff00ff, 5, 10);
+            signLight.position.set(14, 6, 0);
+            scene.add(signLight);
+
+            // Placas WC
+            createSign(new THREE.Vector3(26, 3, 7.9), texWCH);
+            createSign(new THREE.Vector3(28, 3, 7.9), texWCM);
+
+            // ESPELHO NO BANHEIRO
+            const mirrorGeo = new THREE.PlaneGeometry(2, 1.5);
+            const mirror = new Reflector(mirrorGeo, {
+                clipBias: 0.003,
+                textureWidth: window.innerWidth * window.devicePixelRatio,
+                textureHeight: window.innerHeight * window.devicePixelRatio,
+                color: 0x777777
+            });
+            mirror.position.set(29.4, 2.5, 10.5);
+            mirror.rotation.y = -Math.PI / 2;
+            scene.add(mirror);
+            // Moldura do espelho
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.6, 2.1), new THREE.MeshStandardMaterial({color: 0xc0c0c0}));
+            frame.position.set(29.45, 2.5, 10.5);
+            scene.add(frame);
+
+            // Decoração da Balada
+            setupPartyLights(new THREE.Vector3(22, 1, -8), 0xff0000); // Térreo
+            setupPartyLights(new THREE.Vector3(22, 5, -8), 0x0000ff); // Rooftop
+
+            // Inputs
+            document.addEventListener('keydown', (e) => { keyStates[e.code] = true; });
+            document.addEventListener('keyup', (e) => { keyStates[e.code] = false; });
+            
+            document.addEventListener('mousedown', () => {
+                if(document.getElementById('interaction-menu').style.display !== 'block') {
+                    document.body.requestPointerLock();
+                }
+            });
+            
+            document.body.addEventListener('mousemove', (event) => {
+                if (document.pointerLockElement === document.body) {
+                    camera.rotation.y -= event.movementX / 500;
+                    camera.rotation.x -= event.movementY / 500;
+                }
+            });
+
+            if (isMobile) setupMobileControls();
+
+            // Spawn Inicial
             for(let i=0; i<15; i++) spawnNPC();
+            
             window.addEventListener('resize', onWindowResize);
         }
 
-        function createStreetLight(x, y, z) {
-            const light = new THREE.SpotLight(0xffaa00, 500); // Laranja sódio
-            light.position.set(x, y, z);
-            light.angle = Math.PI / 4;
-            light.penumbra = 0.5;
-            light.castShadow = true;
-            light.target.position.set(x, 0, z);
-            scene.add(light);
-            scene.add(light.target);
-
-            // O Poste fisico
-            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 8), new THREE.MeshStandardMaterial({color:0x111111}));
-            pole.position.set(x-1, 4, z);
-            scene.add(pole);
-            const arm = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.1, 0.1), new THREE.MeshStandardMaterial({color:0x111111}));
-            arm.position.set(x-0.5, 7.8, z);
-            scene.add(arm);
+        function createSign(pos, map) {
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), new THREE.MeshBasicMaterial({map:map}));
+            mesh.position.copy(pos);
+            scene.add(mesh);
         }
 
-        function buildEnvironment() {
-            // Chão Asfalto
-            const asphalt = new THREE.Mesh(
-                new THREE.PlaneGeometry(100, 100), 
-                new THREE.MeshStandardMaterial({ map: texAsphalt, roughness: 0.8 })
-            );
-            asphalt.rotation.x = -Math.PI / 2;
-            asphalt.receiveShadow = true;
-            scene.add(asphalt);
-
-            // Calçada
-            const sidewalk = new THREE.Mesh(
-                new THREE.PlaneGeometry(15, 100),
-                new THREE.MeshStandardMaterial({ map: texSidewalk, roughness: 0.5 })
-            );
-            sidewalk.rotation.x = -Math.PI / 2;
-            sidewalk.position.set(8, 0.05, 0); // Levemente elevado
-            sidewalk.receiveShadow = true;
-            scene.add(sidewalk);
-
-            // Prédio Principal
-            const buildingGeo = new THREE.BoxGeometry(20, 6, 30);
-            const buildingMat = new THREE.MeshStandardMaterial({ map: texWall, roughness: 0.2 });
-            const building = new THREE.Mesh(buildingGeo, buildingMat);
-            building.position.set(20, 3, 0);
-            building.castShadow = true;
-            building.receiveShadow = true;
-            scene.add(building);
-
-            // Letreiro Neon "ROOFTOP"
-            createNeonSign(20, 7, 15, "ROOFTOP", 0xff00ff);
-
-            // 2º Andar (Piso)
-            const roofGeo = new THREE.BoxGeometry(19, 0.2, 29);
-            const roofMat = new THREE.MeshStandardMaterial({ map: texWood, roughness: 0.1, metalness: 0.1 });
-            const roof = new THREE.Mesh(roofGeo, roofMat);
-            roof.position.set(20, 6.1, 0);
-            scene.add(roof);
-
-            // Escada/Rampa iluminada
-            const ramp = new THREE.Mesh(new THREE.BoxGeometry(4, 0.5, 12), new THREE.MeshStandardMaterial({ color: 0x333333 }));
-            ramp.position.set(13, 3, 8);
-            ramp.rotation.x = -0.55;
-            scene.add(ramp);
+        function setupPartyLights(pos, color) {
+            const bulb = new THREE.PointLight(color, 2, 15);
+            bulb.position.set(pos.x, pos.y+2, pos.z);
+            bulb.userData = { type: 'pulse' };
+            scene.add(bulb);
             
-            // Corrimão Neon na rampa
-            const handrail = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 12), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
-            handrail.position.set(11.2, 3.5, 8);
-            handrail.rotation.x = -0.55;
-            scene.add(handrail);
-
-            // Festa Térreo
-            createPartyZone(new THREE.Vector3(20, 1, -10), 0xff0055, 1);
-            // Festa Rooftop
-            createPartyZone(new THREE.Vector3(20, 7, -10), 0x00ccff, 2);
-
-            // Banheiro
-            const wc = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-            wc.position.set(25, 1.5, 10);
-            scene.add(wc);
-        }
-
-        function createNeonSign(x, y, z, text, color) {
-            // Simulação de letreiro com uma caixa brilhante por enquanto
-            const sign = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 0.5), new THREE.MeshBasicMaterial({ color: color }));
-            sign.position.set(x, y, z);
-            scene.add(sign);
-            
-            // Luz do letreiro
-            const light = new THREE.PointLight(color, 2, 10);
-            light.position.set(x, y, z + 1);
-            scene.add(light);
-        }
-
-        function createPartyZone(pos, color, floor) {
-            // Mesa DJ
-            const table = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 1), new THREE.MeshLambertMaterial({color: 0x222}));
-            table.position.copy(pos);
-            scene.add(table);
-
-            // Moving Heads (Luzes que giram)
-            const spot1 = new THREE.SpotLight(color, 100);
-            spot1.position.set(pos.x - 3, pos.y + 4, pos.z);
-            spot1.angle = 0.3; spot1.penumbra = 0.2;
-            spot1.userData = { type: 'movingHead', offset: 0 };
-            scene.add(spot1);
-            scene.add(spot1.target);
-
-            const spot2 = new THREE.SpotLight(0xffffff, 100);
-            spot2.position.set(pos.x + 3, pos.y + 4, pos.z);
-            spot2.angle = 0.3; spot2.penumbra = 0.2;
-            spot2.userData = { type: 'movingHead', offset: Math.PI };
-            scene.add(spot2);
-            scene.add(spot2.target);
-
-            // Partículas de Fumaça
+            // Fumaça volumétrica falsa (Sprites)
             const pGeo = new THREE.BufferGeometry();
             const positions = [];
-            for(let i=0; i<100; i++) positions.push((Math.random()-0.5)*8, Math.random()*4, (Math.random()-0.5)*8);
+            for(let i=0; i<50; i++) positions.push((Math.random()-0.5)*5, Math.random()*3, (Math.random()-0.5)*5);
             pGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            const pMat = new THREE.PointsMaterial({ color: color, size: 0.2, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
-            const particles = new THREE.Points(pGeo, pMat);
-            particles.position.copy(pos);
-            scene.add(particles);
+            const pMat = new THREE.PointsMaterial({color:color, size:0.3, transparent:true, opacity:0.3, blending: THREE.AdditiveBlending});
+            const parts = new THREE.Points(pGeo, pMat);
+            parts.position.copy(pos);
+            scene.add(parts);
         }
 
+        // --- LÓGICA DE FÍSICA DO JOGADOR ---
+        function playerCollisions() {
+            const result = worldOctree.capsuleIntersect(playerCollider);
+            playerOnFloor = false;
+            if (result) {
+                playerOnFloor = result.normal.y > 0;
+                if (!playerOnFloor) {
+                    playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
+                }
+                playerCollider.translate(result.normal.multiplyScalar(result.depth));
+            }
+        }
+
+        function updatePlayer(deltaTime) {
+            let damping = Math.exp(-4 * deltaTime) - 1;
+            if (!playerOnFloor) {
+                playerVelocity.y -= GRAVITY * deltaTime;
+                damping *= 0.1; // Menos atrito no ar
+            }
+
+            playerVelocity.addScaledVector(playerVelocity, damping);
+
+            const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
+            playerCollider.translate(deltaPosition);
+            
+            playerCollisions();
+            
+            camera.position.copy(playerCollider.end);
+        }
+
+        function getForwardVector() {
+            camera.getWorldDirection(playerDirection);
+            playerDirection.y = 0;
+            playerDirection.normalize();
+            return playerDirection;
+        }
+
+        function getSideVector() {
+            camera.getWorldDirection(playerDirection);
+            playerDirection.y = 0;
+            playerDirection.normalize();
+            playerDirection.cross(camera.up);
+            return playerDirection;
+        }
+
+        function controls(deltaTime) {
+            const speed = playerOnFloor ? 15 : 8; // Velocidade de caminhada
+
+            if (keyStates['KeyW']) playerVelocity.add(getForwardVector().multiplyScalar(speed * deltaTime));
+            if (keyStates['KeyS']) playerVelocity.add(getForwardVector().multiplyScalar(-speed * deltaTime));
+            if (keyStates['KeyA']) playerVelocity.add(getSideVector().multiplyScalar(-speed * deltaTime));
+            if (keyStates['KeyD']) playerVelocity.add(getSideVector().multiplyScalar(speed * deltaTime));
+            if (keyStates['Space'] && playerOnFloor) playerVelocity.y = 10; // Pulo
+            
+            // Interação
+            if (keyStates['KeyE']) checkInteraction();
+
+            // Mobile Inputs
+            if (isMobile && mobileMoveForward) playerVelocity.add(getForwardVector().multiplyScalar(speed * deltaTime));
+        }
+
+        // --- LÓGICA DO JOGO (NPCs) ---
         function spawnNPC() {
-            const texLoader = new THREE.TextureLoader();
-            const randomFile = npcFiles[Math.floor(Math.random() * npcFiles.length)];
+            // Placeholder para NPCs (Billboarding colorido)
+            // Em uma versão final você carregaria PNGs reais aqui
+            const canvas = document.createElement('canvas');
+            canvas.width=128; canvas.height=256;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = `hsl(${Math.random()*360}, 70%, 50%)`;
+            ctx.fillRect(20, 50, 88, 150); // Corpo
+            ctx.beginPath(); ctx.arc(64, 40, 30, 0, Math.PI*2); ctx.fill(); // Cabeça
             
-            // Tenta carregar imagem, senão usa textura fallback
-            texLoader.load(randomFile, (tex) => {
-                createNPCMesh(tex);
-            }, undefined, (err) => {
-                createNPCMesh(texNPC); // Fallback
-            });
-        }
-
-        function createNPCMesh(map) {
-            const material = new THREE.SpriteMaterial({ map: map, color: 0xffffff }); // Use cor branca para não escurecer
-            const sprite = new THREE.Sprite(material);
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({map:tex});
+            const sprite = new THREE.Sprite(mat);
+            
             sprite.scale.set(1, 1.8, 1);
-            sprite.position.set(Math.random() * -15 - 5, 0.9, (Math.random() - 0.5) * 40);
+            // Spawnar na rua aleatoriamente
+            sprite.position.set(
+                Math.random() * -30, 
+                0.9, 
+                (Math.random() - 0.5) * 60
+            );
             
-            sprite.userData = { state: 'walking_street', waitTime: 0, hasInvite: false };
+            sprite.userData = { state: 'street', waitTime: 0, hasInvite: false, id: Math.random() };
             scene.add(sprite);
             npcs.push(sprite);
         }
 
-        function updateNPCs(delta, time) {
+        function updateNPCs(dt, time) {
             npcs.forEach(npc => {
-                if (npc.userData.state === 'walking_street') {
-                    npc.position.z += Math.sin(time * 0.001 + npc.id) * 0.01; // Movimento suave
-                    if (npc.position.distanceTo(camera.position) < 2.5 && !npc.userData.hasInvite) sellInvite(npc);
-                } 
-                else if (npc.userData.state === 'waiting_line') {
-                    npc.userData.waitTime += delta;
-                    if (npc.userData.waitTime > 30 && Math.random() < 0.02) {
-                        showSpeechBubble(npc);
-                        npc.userData.waitTime = 0;
+                // Animação de "pulo" ao andar
+                if(npc.userData.state === 'street') {
+                    npc.position.y = 0.9 + Math.sin(time*10 + npc.userData.id)*0.05;
+                    npc.position.z += Math.sin(npc.userData.id)*0.02; // Andar aleatório
+                    
+                    if(camera.position.distanceTo(npc.position) < 2.5 && !npc.userData.hasInvite) {
+                        // Vender convite
+                        npc.userData.hasInvite = true;
+                        gameState.invites++;
+                        uiInvites.innerText = gameState.invites;
+                        npc.userData.state = 'line';
+                        waitingLine.push(npc);
+                        
+                        // Ir para a fila
+                        const idx = waitingLine.length - 1;
+                        npc.position.set(10, 0.9, 5 - (idx * 1.0));
                     }
                 }
             });
-            updateBubbles();
         }
-
-        function sellInvite(npc) {
-            npc.userData.hasInvite = true;
-            gameState.invites++;
-            gameState.invitesForNextDrink++;
-            uiInvites.innerText = gameState.invites;
-            
-            if (gameState.invitesForNextDrink >= 5) {
-                gameState.drinks++;
-                gameState.invitesForNextDrink = 0;
-                uiDrinks.innerText = gameState.drinks;
-                // Animação visual de drink (flash verde)
-                uiDrinks.style.color = '#0f0'; setTimeout(()=>uiDrinks.style.color='#fff', 500);
-            }
-
-            npc.userData.state = 'waiting_line';
-            waitingLine.push(npc);
-            const index = waitingLine.length - 1;
-            npc.position.set(8, 0.9, 12 - (index * 1.2)); // Fila na calçada
-        }
-
-        function showSpeechBubble(npc) {
-            const phrase = npcPhrases[Math.floor(Math.random() * npcPhrases.length)];
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubble.innerText = phrase;
-            document.body.appendChild(bubble);
-
-            // Force reflow para animação CSS
-            void bubble.offsetWidth;
-            bubble.classList.add('visible');
-
-            speechBubbles.push({ element: bubble, npc: npc, life: 4.0 });
-        }
-
-        function updateBubbles() {
-            for (let i = speechBubbles.length - 1; i >= 0; i--) {
-                const b = speechBubbles[i];
-                b.life -= 0.016;
-                if (b.life <= 0) {
-                    b.element.remove();
-                    speechBubbles.splice(i, 1);
-                    continue;
-                }
-                const headPos = b.npc.position.clone();
-                headPos.y += 1.2;
-                headPos.project(camera);
-                const x = (headPos.x * .5 + .5) * window.innerWidth;
-                const y = (-(headPos.y * .5) + .5) * window.innerHeight;
-
-                if (headPos.z < 1) { 
-                    b.element.style.left = `${x}px`;
-                    b.element.style.top = `${y}px`;
-                } else {
-                    b.element.style.display = 'none';
-                }
-            }
-        }
-
+        
+        // Interação
         const raycaster = new THREE.Raycaster();
         function checkInteraction() {
-            if (waitingLine.length === 0) return;
-            if (camera.position.distanceTo(waitingLine[0].position) < 4) {
-                currentInteractingNPC = waitingLine[0];
-                menuInteraction.style.display = 'block';
-                if (!isMobile) controls.unlock();
+            if(waitingLine.length > 0) {
+                if (camera.position.distanceTo(waitingLine[0].position) < 4) {
+                    document.exitPointerLock();
+                    document.getElementById('interaction-menu').style.display = 'block';
+                }
             }
         }
 
         window.processEntry = function(type) {
-            if (!currentInteractingNPC) return;
-            if (type === 'pix') {
+            if (waitingLine.length === 0) return;
+            const npc = waitingLine.shift();
+            
+            if(type === 'pix') {
                 gameState.money += 50;
                 uiMoney.innerText = gameState.money;
             }
-            currentInteractingNPC.userData.state = 'inside';
-            currentInteractingNPC.position.set(20 + (Math.random()-0.5)*10, 0.9, (Math.random()-0.5)*10);
-            waitingLine.shift();
-            waitingLine.forEach((npc, index) => npc.position.z = 12 - (index * 1.2));
-            menuInteraction.style.display = 'none';
-            currentInteractingNPC = null;
-            if (!isMobile) controls.lock();
-        };
-
-        function setupKeyboardControls() {
-            document.addEventListener('keydown', (e) => {
-                switch(e.code) {
-                    case 'KeyW': moveForward = true; break;
-                    case 'KeyA': moveLeft = true; break;
-                    case 'KeyS': moveBackward = true; break;
-                    case 'KeyD': moveRight = true; break;
-                    case 'KeyE': checkInteraction(); break;
-                }
-            });
-            document.addEventListener('keyup', (e) => {
-                switch(e.code) {
-                    case 'KeyW': moveForward = false; break;
-                    case 'KeyA': moveLeft = false; break;
-                    case 'KeyS': moveBackward = false; break;
-                    case 'KeyD': moveRight = false; break;
-                }
-            });
+            
+            // NPC entra na balada
+            npc.position.set(22 + (Math.random()-0.5)*5, 0.9, (Math.random()-0.5)*5);
+            npc.userData.state = 'inside';
+            
+            // Reorganiza fila
+            waitingLine.forEach((n, i) => n.position.z = 5 - (i * 1.0));
+            
+            document.getElementById('interaction-menu').style.display = 'none';
+            document.body.requestPointerLock();
         }
 
+        // --- LOOP ---
+        let mobileMoveForward = false;
         function setupMobileControls() {
-            const stickLeft = document.getElementById('stick-left');
-            stickLeft.addEventListener('touchstart', (e) => { e.preventDefault(); moveForward = true; });
-            stickLeft.addEventListener('touchend', (e) => { e.preventDefault(); moveForward = false; });
-            
-            let touchStartX = 0;
-            document.addEventListener('touchstart', (e) => {
-                if(e.touches[0].clientX > window.innerWidth/2) touchStartX = e.touches[0].clientX;
-                if(e.touches.length === 1 && e.touches[0].clientX > window.innerWidth/2) checkInteraction();
-            });
-            document.addEventListener('touchmove', (e) => {
+            const s = document.getElementById('stick-left');
+            s.addEventListener('touchstart', (e)=>{ e.preventDefault(); mobileMoveForward=true; });
+            s.addEventListener('touchend', (e)=>{ e.preventDefault(); mobileMoveForward=false; });
+            document.addEventListener('touchmove', (e)=>{
                 if(e.touches[0].clientX > window.innerWidth/2) {
-                    const deltaX = e.touches[0].clientX - touchStartX;
-                    camera.rotation.y -= deltaX * 0.005;
-                    touchStartX = e.touches[0].clientX;
+                     camera.rotation.y -= e.touches[0].clientX * 0.0001; // Simplificado
                 }
             });
         }
@@ -524,46 +510,20 @@
         }
 
         function animate() {
-            requestAnimationFrame(animate);
-            const time = performance.now();
-            const delta = (time - prevTime) / 1000;
+            const deltaTime = Math.min(0.05, clock.getDelta());
+            const time = clock.getElapsedTime();
 
-            if (!isMobile && controls && controls.isLocked) {
-                velocity.x -= velocity.x * 10.0 * delta;
-                velocity.z -= velocity.z * 10.0 * delta;
-                direction.z = Number(moveForward) - Number(moveBackward);
-                direction.x = Number(moveRight) - Number(moveLeft);
-                direction.normalize();
-                if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
-                if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
-                controls.moveRight(-velocity.x * delta);
-                controls.moveForward(-velocity.z * delta);
-            } else if (isMobile) {
-                if (moveForward) {
-                    camera.translateZ(-8 * delta);
-                }
-            }
-
-            // Colisão de Chão simples
-            if (camera.position.x > 11 && camera.position.x < 15 && camera.position.z > 2 && camera.position.z < 14) {
-                camera.position.y = Math.max(1.7, (camera.position.z - 2) * 0.4 + 1.7);
-            } else if (camera.position.y > 3 && (camera.position.x < 10 || camera.position.x > 30)) {
-                camera.position.y = 1.7; // Caiu
-            }
-
-            // Animação Luzes Moving Heads
-            scene.traverse((obj) => {
-                if(obj.userData && obj.userData.type === 'movingHead') {
-                    obj.target.position.x = obj.position.x + Math.sin(time * 0.002 + obj.userData.offset) * 5;
-                    obj.target.position.z = obj.position.z + Math.cos(time * 0.003) * 5;
-                }
+            controls(deltaTime);
+            updatePlayer(deltaTime);
+            updateNPCs(deltaTime, time);
+            
+            // Piscar luzes
+            scene.traverse(o => {
+                if(o.userData.type === 'pulse') o.intensity = 2 + Math.sin(time*10)*1;
             });
 
-            updateNPCs(delta, time);
-            if (npcs.length < 25) spawnNPC();
-
-            prevTime = time;
             renderer.render(scene, camera);
+            requestAnimationFrame(animate);
         }
     </script>
 </body>
