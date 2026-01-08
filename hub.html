@@ -3,578 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus OSINT Hub - Edu Edition</title>
+    <title>Nexus OSINT - Arsenal Completo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #f3f4f6;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
-            --border-color: #e5e7eb;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --radius: 12px;
-            --modal-bg: rgba(0, 0, 0, 0.6);
-            --modal-content-bg: #ffffff;
+            --bg: #f3f4f6;
+            --header: #ffffff;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-sec: #6b7280;
+            --accent: #2563eb;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        .dark-mode {
-            --bg-color: #0f172a;
-            --header-bg: #1e293b;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-color: #3b82f6;
-            --accent-hover: #60a5fa;
-            --border-color: #334155;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-            --modal-bg: rgba(0, 0, 0, 0.8);
-            --modal-content-bg: #1e293b;
+        body.dark-mode {
+            --bg: #0f172a;
+            --header: #1e293b;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --text-sec: #94a3b8;
+            --accent: #3b82f6;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-primary); line-height: 1.6; padding-bottom: 50px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
+        
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 50px; }
 
         /* Header */
-        header { background-color: var(--header-bg); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); display: flex; align-items: center; gap: 10px; }
-        .theme-btn { background: none; border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
-        .theme-btn:hover { background-color: var(--bg-color); color: var(--accent-color); }
-
-        /* Busca e Filtros */
-        .search-container { max-width: 800px; margin: 40px auto 20px auto; padding: 0 20px; text-align: center; }
-        .search-box { position: relative; width: 100%; }
-        .search-input { width: 100%; padding: 15px 20px 15px 50px; font-size: 1.1rem; border: 2px solid var(--border-color); border-radius: 50px; background-color: var(--card-bg); color: var(--text-primary); outline: none; box-shadow: var(--shadow); }
-        .search-input:focus { border-color: var(--accent-color); }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
-        
-        .main-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .categories { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
-        
-        .cat-btn { 
-            background-color: var(--card-bg); 
-            border: 1px solid var(--border-color); 
-            color: var(--text-secondary); 
-            padding: 8px 18px; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            user-select: none; /* Impede seleção de texto ao clicar rápido */
+        header {
+            background: var(--header); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
         }
-        .cat-btn:hover, .cat-btn.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
+        .logo { font-weight: 700; color: var(--accent); font-size: 1.4rem; display: flex; gap: 10px; align-items: center; }
+        
+        .theme-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--text); 
+            padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 1.2rem;
+        }
+
+        /* Busca */
+        .search-area { max-width: 800px; margin: 40px auto 20px; text-align: center; padding: 0 20px; }
+        .input-wrapper { position: relative; margin-top: 15px; }
+        .search-input {
+            width: 100%; padding: 15px 20px 15px 50px; border-radius: 50px; border: 2px solid var(--border);
+            background: var(--card); color: var(--text); font-size: 1.1rem; outline: none;
+        }
+        .search-input:focus { border-color: var(--accent); }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-sec); }
+
+        /* Filtros */
+        .filters { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; padding: 0 10px; }
+        .filter-btn {
+            background: var(--card); border: 1px solid var(--border); color: var(--text-sec);
+            padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600;
+        }
+        .filter-btn:hover, .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
         /* Grid */
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        
-        .tool-card { 
-            background-color: var(--card-bg); 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius); 
-            padding: 25px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            box-shadow: var(--shadow); 
-            position: relative; 
-            overflow: hidden; /* Mantém tudo dentro das bordas */
-        }
-        .tool-card:hover { transform: translateY(-5px); border-color: var(--accent-color); transition: transform 0.2s; }
-
-        /* Botão de Ajuda (Tutorial) */
-        .help-icon-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.3rem; /* Aumentei um pouco */
-            transition: color 0.2s, transform 0.2s;
-            z-index: 20; /* Garante que fique acima de tudo no card */
-            padding: 5px; /* Aumenta a área de clique */
-        }
-        .help-icon-btn:hover { color: var(--accent-color); transform: scale(1.2); }
-
-        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-right: 25px; }
-        .card-icon { width: 45px; height: 45px; background-color: rgba(37, 99, 235, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-size: 1.5rem; }
-        .card-title { font-size: 1.1rem; font-weight: 700; }
-        .card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; flex-grow: 1; }
-        .card-tag { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); background-color: var(--bg-color); padding: 4px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 15px; }
-        .card-btn { text-decoration: none; background-color: var(--accent-color); color: white; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600; transition: background 0.2s; }
-        .card-btn:hover { background-color: var(--accent-hover); }
-
-        /* MODAL (Tutorial) */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-bg);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            backdrop-filter: blur(5px);
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+            max-width: 1200px; margin: 0 auto; padding: 0 20px;
         }
 
-        .modal-content {
-            background: var(--modal-content-bg);
-            padding: 30px;
-            border-radius: var(--radius);
-            max-width: 600px;
-            width: 100%;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            max-height: 85vh;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            animation: fadeIn 0.3s ease-out;
+        .card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 20px; display: flex; flex-direction: column; position: relative;
+            box-shadow: var(--shadow); transition: transform 0.2s;
         }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* HEADER DO CARD */
+        .card-top { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; padding-right: 30px; }
+        .icon-box {
+            width: 40px; height: 40px; background: rgba(37, 99, 235, 0.1); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1.2rem; flex-shrink: 0;
         }
+        .card-title { font-weight: 700; font-size: 1.1rem; }
 
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            line-height: 1;
+        /* TAG E DESCRIÇÃO */
+        .tag {
+            font-size: 0.75rem; text-transform: uppercase; background: var(--bg); color: var(--text-sec);
+            padding: 4px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 10px; display: inline-block;
         }
-        .modal-close:hover { color: var(--accent-color); }
+        .desc { font-size: 0.9rem; color: var(--text-sec); margin-bottom: 20px; flex-grow: 1; line-height: 1.5; }
 
-        .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .modal-body { color: var(--text-primary); font-size: 1rem; line-height: 1.7; }
-        .modal-body code { background: var(--bg-color); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--accent-color); border: 1px solid var(--border-color); display: inline-block; }
-        .modal-body ul { padding-left: 20px; margin-bottom: 10px; }
-        .modal-body li { margin-bottom: 8px; }
+        /* BOTÃO PRINCIPAL */
+        .btn-link {
+            text-decoration: none; background: var(--accent); color: white; padding: 10px;
+            border-radius: 8px; text-align: center; font-weight: 600; display: block;
+        }
+        .btn-link:hover { opacity: 0.9; }
 
-        footer { text-align: center; margin-top: 50px; color: var(--text-secondary); font-size: 0.9rem; }
+        /* BOTÃO DE AJUDA (?) - FIXO E SEGURO */
+        .help-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: transparent; border: none; color: var(--text-sec);
+            font-size: 1.4rem; cursor: pointer; z-index: 10;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+        }
+        .help-btn:hover { color: var(--accent); background: rgba(0,0,0,0.05); }
+
+        /* MODAL */
+        .modal-bg {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 999; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px); padding: 20px;
+        }
+        .modal-box {
+            background: var(--card); padding: 30px; border-radius: 12px; max-width: 600px; width: 100%;
+            position: relative; border: 1px solid var(--border); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+        .close-modal {
+            position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: var(--text-sec); line-height: 1;
+        }
+        .modal-content h2 { color: var(--accent); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .modal-content p, .modal-content li { color: var(--text); line-height: 1.6; margin-bottom: 10px; }
+        .modal-content code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--accent); border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo"><i class="fa-solid fa-radar"></i> Nexus OSINT v3.1</div>
-        <div class="controls">
-            <button class="theme-btn" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
-        </div>
+        <div class="logo"><i class="fa-solid fa-radar"></i> Nexus OSINT</div>
+        <button class="theme-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
     </header>
 
-    <div class="search-container">
-        <h1 style="margin-bottom: 15px; font-weight: 300;">Arsenal de Inteligência</h1>
-        <div class="search-box">
+    <div class="search-area">
+        <h1>Arsenal de Inteligência</h1>
+        <div class="input-wrapper">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar ferramenta...">
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar ferramenta (ex: Shodan, Email...)">
         </div>
     </div>
 
-    <div class="main-container">
-        <div class="categories">
-            <button class="cat-btn active" data-filter="all">Todos</button>
-            <button class="cat-btn" data-filter="Framework">Frameworks</button>
-            <button class="cat-btn" data-filter="Username">Username</button>
-            <button class="cat-btn" data-filter="Email">Email</button>
-            <button class="cat-btn" data-filter="Network">Rede/IoT</button>
-            <button class="cat-btn" data-filter="Leaks">Leaks</button>
-            <button class="cat-btn" data-filter="Images">Imagens/Mapas</button>
-        </div>
-
-        <div class="tools-grid" id="tools-grid">
-            
-            <div class="tool-card" data-category="Framework">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-share-nodes"></i></div>
-                    <div class="card-title">Maltego</div>
-                </div>
-                <span class="card-tag">Framework</span>
-                <p class="card-desc">Ferramenta gráfica para análise de links e mineração de dados em tempo real.</p>
-                <a href="https://www.maltego.com" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Framework">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
-                    <div class="card-title">SpiderFoot</div>
-                </div>
-                <span class="card-tag">Framework</span>
-                <p class="card-desc">Automação OSINT para varredura de centenas de fontes de dados.</p>
-                <a href="https://www.spiderfoot.net" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Framework">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-terminal"></i></div>
-                    <div class="card-title">Recon-ng</div>
-                </div>
-                <span class="card-tag">Framework</span>
-                <p class="card-desc">Framework modular de reconhecimento web escrito em Python.</p>
-                <a href="https://github.com/lanmaster53/recon-ng" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
-                    <div class="card-title">Shodan</div>
-                </div>
-                <span class="card-tag">IoT / Scanner</span>
-                <p class="card-desc">O "Google" dos dispositivos conectados (câmeras, servidores, SCADA).</p>
-                <a href="https://www.shodan.io" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-wave-square"></i></div>
-                    <div class="card-title">GreyNoise</div>
-                </div>
-                <span class="card-tag">Scanner</span>
-                <p class="card-desc">Analisa e rotula IPs que escaneiam a internet e filtram ruído.</p>
-                <a href="https://www.greynoise.io" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
-                    <div class="card-title">Amass</div>
-                </div>
-                <span class="card-tag">Domínio / DNS</span>
-                <p class="card-desc">Mapeamento de rede e enumeração profunda de subdomínios.</p>
-                <a href="https://github.com/owasp-amass/amass" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-             <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-network-wired"></i></div>
-                    <div class="card-title">DNS Dumpster</div>
-                </div>
-                <span class="card-tag">Domínio</span>
-                <p class="card-desc">Pesquisa de domínio gratuita para encontrar registros DNS e mapas.</p>
-                <a href="https://dnsdumpster.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <div class="card-title">Wayback Machine</div>
-                </div>
-                <span class="card-tag">Arquivo</span>
-                <p class="card-desc">Versões antigas de sites e páginas deletadas.</p>
-                <a href="https://archive.org/web/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-            
-            <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-eye"></i></div>
-                    <div class="card-title">ZoomEye</div>
-                </div>
-                <span class="card-tag">IoT / Scanner</span>
-                <p class="card-desc">Motor de busca do ciberespaço que registra hosts e componentes web.</p>
-                <a href="https://www.zoomeye.org" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Username">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-user-secret"></i></div>
-                    <div class="card-title">Sherlock</div>
-                </div>
-                <span class="card-tag">Username</span>
-                <p class="card-desc">Script Python para achar usernames em redes sociais via terminal.</p>
-                <a href="https://github.com/sherlock-project/sherlock" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Username">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-address-card"></i></div>
-                    <div class="card-title">WhatsMyName</div>
-                </div>
-                <span class="card-tag">Username</span>
-                <p class="card-desc">Checagem rápida de usernames em diversos sites.</p>
-                <a href="https://whatsmyname.app" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Username">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-id-card"></i></div>
-                    <div class="card-title">Namechk</div>
-                </div>
-                <span class="card-tag">Username</span>
-                <p class="card-desc">Verifique a disponibilidade de nomes de usuários e domínios.</p>
-                <a href="https://namechk.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Email">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-at"></i></div>
-                    <div class="card-title">Hunter.io</div>
-                </div>
-                <span class="card-tag">Email</span>
-                <p class="card-desc">Encontre emails profissionais de uma empresa específica.</p>
-                <a href="https://hunter.io" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Email">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
-                    <div class="card-title">theHarvester</div>
-                </div>
-                <span class="card-tag">Email / Domínio</span>
-                <p class="card-desc">Coleta e-mails, subdomínios, hosts e portas.</p>
-                <a href="https://github.com/laramies/theHarvester" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Email">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
-                    <div class="card-title">Epieos</div>
-                </div>
-                <span class="card-tag">Email / Telefone</span>
-                <p class="card-desc">Investigue e-mails e telefones sem alertar o alvo.</p>
-                <a href="https://epieos.com" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-database"></i></div>
-                    <div class="card-title">Intelligence X</div>
-                </div>
-                <span class="card-tag">Data Leak</span>
-                <p class="card-desc">Arquivo de dados históricos e vazamentos, busca na Darknet.</p>
-                <a href="https://intelx.io" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-shield-cat"></i></div>
-                    <div class="card-title">Have I Been Pwned</div>
-                </div>
-                <span class="card-tag">Data Breach</span>
-                <p class="card-desc">Verifique se seu email vazou em brechas de segurança.</p>
-                <a href="https://haveibeenpwned.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-             <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-brands fa-google"></i></div>
-                    <div class="card-title">Google Dorks DB</div>
-                </div>
-                <span class="card-tag">Search</span>
-                <p class="card-desc">Banco de dados para encontrar arquivos sensíveis via Google.</p>
-                <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-             <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
-                    <div class="card-title">DeHashed</div>
-                </div>
-                <span class="card-tag">Data Breach</span>
-                <p class="card-desc">Pesquisa avançada em bancos de dados de vazamentos.</p>
-                <a href="https://www.dehashed.com" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Images">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-image"></i></div>
-                    <div class="card-title">Yandex Images</div>
-                </div>
-                <span class="card-tag">Imagens</span>
-                <p class="card-desc">Melhor motor para reconhecimento facial e busca reversa.</p>
-                <a href="https://yandex.com/images/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Images">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-camera-rotate"></i></div>
-                    <div class="card-title">TinEye</div>
-                </div>
-                <span class="card-tag">Imagens</span>
-                <p class="card-desc">Busca reversa para descobrir a origem de uma imagem.</p>
-                <a href="https://tineye.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-             <div class="tool-card" data-category="Images">
-                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-earth-americas"></i></div>
-                    <div class="card-title">Google Earth Pro</div>
-                </div>
-                <span class="card-tag">Mapas</span>
-                <p class="card-desc">Satélite detalhado e imagens históricas (Timeline).</p>
-                <a href="https://www.google.com/earth/versions/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-        </div>
+    <div class="filters" id="filterContainer">
+        <button class="filter-btn active" data-cat="all">Todos</button>
+        <button class="filter-btn" data-cat="Framework">Frameworks</button>
+        <button class="filter-btn" data-cat="Username">Username</button>
+        <button class="filter-btn" data-cat="Email">Email</button>
+        <button class="filter-btn" data-cat="Network">Rede/IoT</button>
+        <button class="filter-btn" data-cat="Leaks">Leaks</button>
+        <button class="filter-btn" data-cat="Images">Imagens/Mapas</button>
     </div>
 
-    <footer>
-        <p>Nexus OSINT Arsenal &copy; 2024</p>
-    </footer>
+    <div class="grid" id="toolsGrid">
+        
+        <div class="card" data-cat="Framework">
+            <button class="help-btn" onclick="openTutorial('Maltego')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-share-nodes"></i></div>
+                <div class="card-title">Maltego</div>
+            </div>
+            <span class="tag">Framework</span>
+            <p class="desc">Ferramenta gráfica para análise de links e mineração de dados.</p>
+            <a href="https://www.maltego.com" target="_blank" class="btn-link">Acessar</a>
+        </div>
 
-    <div class="modal-overlay" id="tutorial-modal">
-        <div class="modal-content">
-            <span class="modal-close" id="close-modal">&times;</span>
-            <div class="modal-title" id="modal-title">Título</div>
-            <div class="modal-body" id="modal-body">
-                </div>
+        <div class="card" data-cat="Framework">
+            <button class="help-btn" onclick="openTutorial('SpiderFoot')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-spider"></i></div>
+                <div class="card-title">SpiderFoot</div>
+            </div>
+            <span class="tag">Framework</span>
+            <p class="desc">Automação OSINT para varredura de múltiplas fontes.</p>
+            <a href="https://www.spiderfoot.net" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Framework">
+            <button class="help-btn" onclick="openTutorial('Recon-ng')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-terminal"></i></div>
+                <div class="card-title">Recon-ng</div>
+            </div>
+            <span class="tag">Framework</span>
+            <p class="desc">Framework modular de reconhecimento web via terminal.</p>
+            <a href="https://github.com/lanmaster53/recon-ng" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('Shodan')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-globe"></i></div>
+                <div class="card-title">Shodan</div>
+            </div>
+            <span class="tag">IoT / Scanner</span>
+            <p class="desc">O mecanismo de busca para dispositivos conectados (Câmeras, Servers).</p>
+            <a href="https://www.shodan.io" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('GreyNoise')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-wave-square"></i></div>
+                <div class="card-title">GreyNoise</div>
+            </div>
+            <span class="tag">Scanner</span>
+            <p class="desc">Analisa IPs que escaneiam a internet e filtra ruído de fundo.</p>
+            <a href="https://www.greynoise.io" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('Amass')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-sitemap"></i></div>
+                <div class="card-title">Amass</div>
+            </div>
+            <span class="tag">Domínio</span>
+            <p class="desc">Mapeamento de rede e enumeração profunda de subdomínios.</p>
+            <a href="https://github.com/owasp-amass/amass" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('DNS Dumpster')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-network-wired"></i></div>
+                <div class="card-title">DNS Dumpster</div>
+            </div>
+            <span class="tag">Domínio</span>
+            <p class="desc">Pesquisa de domínio gratuita para encontrar registros DNS.</p>
+            <a href="https://dnsdumpster.com/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('Wayback Machine')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div class="card-title">Wayback Machine</div>
+            </div>
+            <span class="tag">Arquivo</span>
+            <p class="desc">Veja versões antigas de sites e páginas deletadas.</p>
+            <a href="https://archive.org/web/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('ZoomEye')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-eye"></i></div>
+                <div class="card-title">ZoomEye</div>
+            </div>
+            <span class="tag">IoT</span>
+            <p class="desc">Motor de busca do ciberespaço, alternativa ao Shodan.</p>
+            <a href="https://www.zoomeye.org" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Username">
+            <button class="help-btn" onclick="openTutorial('Sherlock')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-user-secret"></i></div>
+                <div class="card-title">Sherlock</div>
+            </div>
+            <span class="tag">Username</span>
+            <p class="desc">Busca por nomes de usuários em centenas de redes sociais.</p>
+            <a href="https://github.com/sherlock-project/sherlock" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Username">
+            <button class="help-btn" onclick="openTutorial('WhatsMyName')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-address-card"></i></div>
+                <div class="card-title">WhatsMyName</div>
+            </div>
+            <span class="tag">Username</span>
+            <p class="desc">Checagem rápida de usernames em diversos sites (Web).</p>
+            <a href="https://whatsmyname.app" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Username">
+            <button class="help-btn" onclick="openTutorial('Namechk')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-id-card"></i></div>
+                <div class="card-title">Namechk</div>
+            </div>
+            <span class="tag">Username</span>
+            <p class="desc">Verifique disponibilidade de usuário e domínios.</p>
+            <a href="https://namechk.com/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Email">
+            <button class="help-btn" onclick="openTutorial('Hunter.io')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-at"></i></div>
+                <div class="card-title">Hunter.io</div>
+            </div>
+            <span class="tag">Email</span>
+            <p class="desc">Encontre e-mails profissionais de uma empresa específica.</p>
+            <a href="https://hunter.io" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Email">
+            <button class="help-btn" onclick="openTutorial('theHarvester')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-envelope-open-text"></i></div>
+                <div class="card-title">theHarvester</div>
+            </div>
+            <span class="tag">Email</span>
+            <p class="desc">Coleta e-mails, subdomínios, hosts e portas.</p>
+            <a href="https://github.com/laramies/theHarvester" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Email">
+            <button class="help-btn" onclick="openTutorial('Epieos')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
+                <div class="card-title">Epieos</div>
+            </div>
+            <span class="tag">Email</span>
+            <p class="desc">Investigue e-mails e telefones (Google, Skype) sem alertar o alvo.</p>
+            <a href="https://epieos.com" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Leaks">
+            <button class="help-btn" onclick="openTutorial('Intelligence X')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-database"></i></div>
+                <div class="card-title">Intelligence X</div>
+            </div>
+            <span class="tag">Data Leak</span>
+            <p class="desc">Motor de busca e arquivo que preserva dados históricos e leaks.</p>
+            <a href="https://intelx.io" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Leaks">
+            <button class="help-btn" onclick="openTutorial('Have I Been Pwned')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-shield-cat"></i></div>
+                <div class="card-title">Have I Been Pwned</div>
+            </div>
+            <span class="tag">Data Breach</span>
+            <p class="desc">Verifique se um email ou senha foi comprometido em vazamentos.</p>
+            <a href="https://haveibeenpwned.com/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Leaks">
+            <button class="help-btn" onclick="openTutorial('Google Dorks DB')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-brands fa-google"></i></div>
+                <div class="card-title">Google Dorks DB</div>
+            </div>
+            <span class="tag">Search</span>
+            <p class="desc">Banco de dados de comandos para encontrar arquivos sensíveis.</p>
+            <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Leaks">
+            <button class="help-btn" onclick="openTutorial('DeHashed')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-unlock-keyhole"></i></div>
+                <div class="card-title">DeHashed</div>
+            </div>
+            <span class="tag">Data Breach</span>
+            <p class="desc">Pesquisa em bancos de dados de vazamentos para credenciais.</p>
+            <a href="https://www.dehashed.com" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Images">
+            <button class="help-btn" onclick="openTutorial('Yandex Images')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-image"></i></div>
+                <div class="card-title">Yandex Images</div>
+            </div>
+            <span class="tag">Imagens</span>
+            <p class="desc">Melhor motor para reconhecimento facial e busca reversa de imagem.</p>
+            <a href="https://yandex.com/images/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Images">
+            <button class="help-btn" onclick="openTutorial('TinEye')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-camera-rotate"></i></div>
+                <div class="card-title">TinEye</div>
+            </div>
+            <span class="tag">Imagens</span>
+            <p class="desc">Busca reversa para descobrir a origem de uma imagem.</p>
+            <a href="https://tineye.com/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Images">
+            <button class="help-btn" onclick="openTutorial('Google Earth Pro')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-earth-americas"></i></div>
+                <div class="card-title">Google Earth Pro</div>
+            </div>
+            <span class="tag">Mapas</span>
+            <p class="desc">Visualização de satélite detalhada e imagens históricas.</p>
+            <a href="https://www.google.com/earth/versions/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+    </div>
+
+    <div class="modal-bg" id="modalBg">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-content">
+                <h2 id="modalTitle">Título</h2>
+                <div id="modalBody">Texto aqui...</div>
+            </div>
         </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- BASE DE DADOS DE TUTORIAIS ---
+        // 1. DADOS DOS TUTORIAIS
         const tutorials = {
-            "Maltego": "<p><strong>O que é:</strong> Cria gráficos de relacionamentos entre dados.</p><ul><li>Use 'Transforms' para expandir dados (Ex: Email -> Redes Sociais).</li><li>Requer cadastro e instalação do cliente Java.</li><li>A versão CE (Community) é gratuita mas limitada.</li></ul>",
-            "SpiderFoot": "<p><strong>O que é:</strong> Automação que consulta centenas de fontes.</p><ul><li>Inicie um 'Scan' inserindo o alvo (Domínio, IP, Email).</li><li>Aguarde o processamento (pode demorar).</li><li>Visualize na aba 'Correlations' para ver conexões perigosas.</li></ul>",
-            "Recon-ng": "<p><strong>O que é:</strong> Framework via linha de comando (estilo Metasploit).</p><code>recon-ng</code><ul><li>Adicione chaves de API: <code>keys add [api_name] [key]</code></li><li>Busque módulos: <code>modules search [termo]</code></li><li>Execute: <code>run</code></li></ul>",
-            "Shodan": "<p><strong>O que é:</strong> Busca dispositivos IoT.</p><ul><li>Filtre por país: <code>country:BR</code></li><li>Filtre por organização: <code>org:\"Vivo\"</code></li><li>Busque vulnerabilidades: <code>has_vuln:true</code></li><li>Busque câmeras: <code>webcamxp</code></li></ul>",
-            "GreyNoise": "<p><strong>O que é:</strong> Identifica scanners massivos.</p><ul><li>Coloque um IP suspeito na busca.</li><li>Se o GreyNoise disser 'Noise', é provável que seja um bot de varredura automática, e não um ataque direcionado a você especificamente.</li></ul>",
-            "Amass": "<p><strong>O que é:</strong> Mapeamento de ataque externo.</p><ul><li>Uso via terminal: <code>amass enum -d exemplo.com</code></li><li>Ele usa brute-force de DNS e fontes públicas para achar subdomínios que o Google não indexou.</li></ul>",
-            "DNS Dumpster": "<p><strong>O que é:</strong> Mapeamento DNS visual.</p><ul><li>Insira o domínio (ex: facebook.com).</li><li>Analise o 'Mapping Graph' verde.</li><li>Verifique os registros MX (emails) e TXT (verificações de segurança).</li></ul>",
-            "Wayback Machine": "<p><strong>O que é:</strong> Máquina do tempo da internet.</p><ul><li>Insira a URL de um perfil ou site deletado.</li><li>Use a linha do tempo no topo para selecionar o ano (barras pretas indicam capturas).</li><li>Clique na data no calendário (círculo azul/verde).</li></ul>",
-            "Sherlock": "<p><strong>O que é:</strong> Busca username em 300+ sites.</p><ul><li>Instale Python.</li><li>Rode: <code>python3 sherlock user123</code></li><li>Ele listará todas as URLs onde 'user123' existe.</li></ul>",
-            "WhatsMyName": "<p><strong>O que é:</strong> Versão web similar ao Sherlock.</p><ul><li>Digite o username no campo e filtre por categoria (ex: Dating, Tech).</li><li>Os resultados com 'Found' permitem clicar para ver o perfil.</li></ul>",
-            "Hunter.io": "<p><strong>O que é:</strong> Padrão de emails corporativos.</p><ul><li>Digite a empresa (ex: 'microsoft.com').</li><li>Ele mostra o padrão (ex: nome.sobrenome@microsoft.com).</li><li>Indica fontes onde o email apareceu publicamente.</li></ul>",
-            "theHarvester": "<p><strong>O que é:</strong> Coleta passiva de emails.</p><ul><li>Comando: <code>theHarvester -d site.com -b all</code></li><li>O parâmetro <code>-b all</code> busca no Google, Bing, LinkedIn, etc.</li></ul>",
-            "Epieos": "<p><strong>O que é:</strong> Verifica contas vinculadas a email/telefone.</p><ul><li>Insira o email.</li><li>Ele mostra se o email tem conta Google (com foto e avaliações no Maps), Skype, etc., sem notificar o dono.</li></ul>",
-            "Intelligence X": "<p><strong>O que é:</strong> Google da Darknet/Leaks.</p><ul><li>Aceita buscar por Email, IP, Bitcoin Address, Domain.</li><li>Muitos resultados são pagos, mas as 'previews' já dão muita informação.</li></ul>",
-            "Have I Been Pwned": "<p><strong>O que é:</strong> Checagem de segurança pessoal.</p><ul><li>Digite seu email.</li><li>Se a tela ficar vermelha, desça para ver em qual vazamento (ex: LinkedIn 2016) seus dados estavam.</li></ul>",
-            "Google Dorks DB": "<p><strong>O que é:</strong> Comandos avançados.</p><ul><li>Exemplo: <code>site:br filetype:pdf "cpf"</code> (Busca PDFs com a palavra CPF em sites .br).</li><li>O site lista milhares de combinações prontas.</li></ul>",
-            "DeHashed": "<p><strong>O que é:</strong> Buscador de senhas vazadas (Pago/Freemium).</p><ul><li>Permite buscar senha '123456' e ver quem usa.</li><li>Ótimo para pivotar (descobrir outros emails da mesma pessoa).</li></ul>",
-            "Yandex Images": "<p><strong>O que é:</strong> Reconhecimento facial russo.</p><ul><li>Suba a foto de um rosto (mesmo recortada).</li><li>O algoritmo é mais agressivo que o do Google, achando perfis em redes sociais menores.</li></ul>",
-            "TinEye": "<p><strong>O que é:</strong> Rastreio de origem.</p><ul><li>Ideal para saber se uma foto de perfil é fake (roubada de banco de imagens).</li><li>Permite filtrar por data ('Oldest') para achar a primeira vez que a foto apareceu.</li></ul>",
-            "Google Earth Pro": "<p><strong>O que é:</strong> Geo-inteligência.</p><ul><li>Baixe a versão Desktop Pro.</li><li>Use o ícone de 'Relógio' no menu superior para ver imagens de satélite antigas da mesma região.</li></ul>",
-            "ZoomEye": "<p><strong>O que é:</strong> Alternativa chinesa ao Shodan.</p><ul><li>Muitas vezes acha dispositivos na Ásia que o Shodan perde.</li><li>Usa dorks próprias como <code>app:\"Apache\" +country:\"CN\"</code>.</li></ul>",
-            "Namechk": "<p><strong>O que é:</strong> Disponibilidade de marca.</p><ul><li>Verifica se o user está livre. Se estiver 'Ocupado' em tudo, é provável que seja uma pessoa famosa ou marca ativa.</li></ul>"
+            "Maltego": "<p>Cria gráficos de relacionamentos.</p><ul><li>Use 'Transforms' para expandir dados (Ex: Email -> Redes Sociais).</li><li>Requer cadastro e Java instalado.</li></ul>",
+            "SpiderFoot": "<p>Automação de varredura.</p><ul><li>Inicie um 'Scan' inserindo o alvo.</li><li>Veja a aba 'Correlations' para alertas críticos.</li></ul>",
+            "Recon-ng": "<p>Framework via terminal.</p><code>recon-ng</code><ul><li>Adicione chaves: <code>keys add [api] [key]</code></li><li>Busque: <code>modules search [termo]</code></li><li>Rode: <code>run</code></li></ul>",
+            "Shodan": "<p>Busca IoT.</p><ul><li>Filtre por país: <code>country:BR</code></li><li>Filtre por org: <code>org:\"Vivo\"</code></li><li>Vulns: <code>has_vuln:true</code></li></ul>",
+            "GreyNoise": "<p>Identifica ruído.</p><ul><li>Pesquise um IP.</li><li>Se for 'Noise', é um scanner automático, não um ataque direcionado.</li></ul>",
+            "Amass": "<p>Mapeamento de ataque.</p><code>amass enum -d site.com</code><ul><li>Usa brute-force de DNS para achar subdomínios ocultos.</li></ul>",
+            "DNS Dumpster": "<p>Mapa de DNS.</p><ul><li>Insira o domínio.</li><li>Verifique registros MX (email) e o mapa visual verde.</li></ul>",
+            "Wayback Machine": "<p>Máquina do tempo.</p><ul><li>Insira a URL.</li><li>Use a linha do tempo para escolher o ano e clique na data (bolinha azul).</li></ul>",
+            "Sherlock": "<p>Username Search.</p><code>python3 sherlock user123</code><ul><li>Lista todas as redes sociais onde esse usuário existe.</li></ul>",
+            "WhatsMyName": "<p>Username Search Web.</p><ul><li>Digite o nome e filtre por categoria (Dating, Tech, etc).</li></ul>",
+            "Hunter.io": "<p>Emails Corporativos.</p><ul><li>Digite a empresa (ex: 'apple.com').</li><li>Ele mostra o padrão de email (nome.sobrenome@...).</li></ul>",
+            "theHarvester": "<p>Coleta Passiva.</p><code>theHarvester -d site.com -b all</code><ul><li>Busca no Google, Bing, LinkedIn sem tocar no servidor alvo.</li></ul>",
+            "Epieos": "<p>Investigação Email.</p><ul><li>Insira o email.</li><li>Mostra se tem conta Google (Maps, Fotos), Skype e vazamentos.</li></ul>",
+            "Intelligence X": "<p>Busca na Darknet.</p><ul><li>Aceita Email, IP, Bitcoin, Domínio.</li><li>Resultados mostram onde o dado vazou.</li></ul>",
+            "Have I Been Pwned": "<p>Vazamentos.</p><ul><li>Se ficar vermelho, desça a tela para ver qual site vazou seus dados (ex: LinkedIn, Adobe).</li></ul>",
+            "Google Dorks DB": "<p>Comandos de busca.</p><ul><li>Ex: <code>site:br filetype:pdf cpf</code></li><li>Encontra arquivos PDF com CPF em sites brasileiros.</li></ul>",
+            "DeHashed": "<p>Senhas Vazadas.</p><ul><li>Permite buscar senhas, emails e usernames em bancos de dados vazados.</li></ul>",
+            "Yandex Images": "<p>Reconhecimento Facial.</p><ul><li>Suba uma foto de rosto.</li><li>Muito eficiente para achar perfis na Rússia e Europa.</li></ul>",
+            "TinEye": "<p>Origem da Foto.</p><ul><li>Descubra se a foto de perfil é falsa (banco de imagens) ou onde mais ela aparece.</li></ul>",
+            "Google Earth Pro": "<p>Geo-Inteligência.</p><ul><li>Use o ícone de 'Relógio' para ver imagens de satélite de anos passados.</li></ul>",
+            "ZoomEye": "<p>Busca IoT (China).</p><ul><li>Similar ao Shodan, mas acha dispositivos diferentes na Ásia.</li></ul>",
+            "Namechk": "<p>Marca Pessoal.</p><ul><li>Verifica se o usuário está livre na maioria dos sites.</li></ul>"
         };
 
-        // --- REFERÊNCIAS ---
-        const modal = document.getElementById('tutorial-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalBody = document.getElementById('modal-body');
-        const closeModal = document.getElementById('close-modal');
-        const searchInput = document.getElementById('search-input');
-        const cards = document.querySelectorAll('.tool-card');
-        const catButtons = document.querySelectorAll('.cat-btn');
-
-        // --- 1. LÓGICA DE FILTROS (CATEGORIAS) ---
-        catButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remover classe 'active' de todos
-                catButtons.forEach(b => b.classList.remove('active'));
-                // Adicionar ao clicado
-                btn.classList.add('active');
-                
-                const category = btn.getAttribute('data-filter');
-                
-                cards.forEach(card => {
-                    const cardCat = card.getAttribute('data-category');
-                    if (category === 'all' || cardCat === category) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-                
-                // Limpar busca ao clicar em categoria
-                searchInput.value = '';
-            });
-        });
-
-        // --- 2. LÓGICA DE BUSCA ---
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            
-            // Remove seleção de categoria ao buscar
-            catButtons.forEach(b => b.classList.remove('active'));
-            
-            cards.forEach(card => {
-                const title = card.querySelector('.card-title').textContent.toLowerCase();
-                const desc = card.querySelector('.card-desc').textContent.toLowerCase();
-                const tag = card.querySelector('.card-tag').textContent.toLowerCase();
-                
-                if (title.includes(term) || desc.includes(term) || tag.includes(term)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-
-        // --- 3. LÓGICA DO MODAL (AJUDA) ---
-        const helpButtons = document.querySelectorAll('.help-icon-btn');
-
-        helpButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Impede que o clique "vaze" para o card
-                e.preventDefault();  // Previne comportamento padrão
-                
-                const card = btn.closest('.tool-card');
-                const title = card.querySelector('.card-title').textContent.trim();
-                
-                if (tutorials[title]) {
-                    modalTitle.textContent = title;
-                    modalBody.innerHTML = tutorials[title];
-                } else {
-                    modalTitle.textContent = title;
-                    modalBody.innerHTML = "<p>Tutorial em desenvolvimento.</p>";
-                }
-                
-                modal.style.display = 'flex';
-            });
-        });
-
-        // Fechar Modal
-        closeModal.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        // Fechar clicando fora
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // --- 4. DARK MODE ---
-        const themeBtn = document.getElementById('theme-toggle');
+        // 2. LÓGICA DO TEMA (DARK MODE)
+        const themeBtn = document.getElementById('themeToggle');
         const icon = themeBtn.querySelector('i');
-        
+        const body = document.body;
+
+        // Carregar preferência salva
         if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
+            body.classList.add('dark-mode');
             icon.classList.replace('fa-moon', 'fa-sun');
         }
 
         themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            
             if (isDark) {
                 icon.classList.replace('fa-moon', 'fa-sun');
                 localStorage.setItem('theme', 'dark');
@@ -583,7 +458,78 @@
                 localStorage.setItem('theme', 'light');
             }
         });
-    });
+
+        // 3. LÓGICA DOS FILTROS
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active de todos
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Adiciona ao clicado
+                btn.classList.add('active');
+
+                const category = btn.getAttribute('data-cat');
+
+                cards.forEach(card => {
+                    const cardCat = card.getAttribute('data-cat');
+                    if (category === 'all' || cardCat === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 4. LÓGICA DA BUSCA
+        const searchInput = document.getElementById('searchInput');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').innerText.toLowerCase();
+                const desc = card.querySelector('.desc').innerText.toLowerCase();
+                const tag = card.querySelector('.tag').innerText.toLowerCase();
+
+                if (title.includes(term) || desc.includes(term) || tag.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // 5. LÓGICA DO MODAL (TUTORIAL)
+        const modalBg = document.getElementById('modalBg');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        // Função chamada diretamente pelo onclick no HTML (Maneira mais segura)
+        function openTutorial(toolName) {
+            modalTitle.innerText = toolName;
+            
+            if (tutorials[toolName]) {
+                modalBody.innerHTML = tutorials[toolName];
+            } else {
+                modalBody.innerHTML = "<p>Tutorial em breve.</p>";
+            }
+            
+            modalBg.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modalBg.style.display = 'none';
+        }
+
+        // Fechar ao clicar fora
+        window.onclick = function(event) {
+            if (event.target == modalBg) {
+                closeModal();
+            }
+        }
     </script>
 </body>
 </html>
