@@ -1,456 +1,477 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rooftop Simulator V5.0 - The Real Nightclub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clone Angry Birds - Engine Física</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; }
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
-        
-        /* HUD Moderno */
-        #stats { 
-            position: absolute; top: 20px; left: 20px; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            padding: 20px; border-radius: 12px; border-bottom: 4px solid #ff0055;
-            color: white; font-weight: 700; font-size: 14px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            pointer-events: auto;
-        }
-        #stats div { margin-bottom: 8px; }
-
-        /* Mira */
-        #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
-            background: rgba(255,255,255,0.8); border-radius: 50%;
-            transform: translate(-50%, -50%); pointer-events: none;
-            border: 2px solid rgba(0,0,0,0.5);
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA); /* Céu */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
 
-        /* Menu Interativo */
-        #interaction-menu {
-            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #1a1a2e, #16213e); 
-            border: 1px solid rgba(255,255,255,0.1); padding: 40px; text-align: center;
-            pointer-events: auto; z-index: 100; border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        #gameCanvas {
+            display: block;
         }
-        .btn {
-            display: block; width: 100%; padding: 15px 30px; margin: 15px 0; cursor: pointer;
-            font-weight: 800; font-size: 16px; border: none; text-transform: uppercase; border-radius: 50px;
-            transition: 0.3s; letter-spacing: 1px;
-        }
-        .btn-pix { background: linear-gradient(to right, #00b09b, #96c93d); color: #fff; box-shadow: 0 5px 15px rgba(0,176,155,0.4); }
-        .btn-pix:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,176,155,0.6); }
-        .btn-list { background: linear-gradient(to right, #ff5f6d, #ffc371); color: white; box-shadow: 0 5px 15px rgba(255,95,109,0.4); }
-        .btn-list:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,95,109,0.6); }
 
-        #instructions {
-            position: absolute; bottom: 30px; width: 100%; text-align: center;
-            color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 600;
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
         }
-        
-        /* Mobile */
-        #mobile-controls { display: none; pointer-events: auto; }
-        .control-pad { position: absolute; bottom: 40px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
-        #stick-left { left: 30px; }
-        .jump-btn { position:absolute; bottom:50px; right:30px; width:80px; height:80px; background:linear-gradient(135deg, #ff0055, #ff5500); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; box-shadow: 0 5px 15px rgba(255,0,85,0.4); }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 2px 2px 0px white;
+        }
+
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        button {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 4px #c0392b;
+            font-weight: bold;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 #c0392b;
+        }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="ui-layer">
-        <div id="crosshair"></div>
-        <div id="stats">
-            <div style="color:#ff0055">ROOFTOP SIM V5.0</div>
-            <div>🍸 DRINKS: <span id="drink-count" style="color:#00ffcc">0</span></div>
-            <div>🎫 CONVITES: <span id="invites-count">0</span></div>
-            <div>💲 CAIXA: R$ <span id="money-count">0</span></div>
-        </div>
+        <div class="score">Placar: <span id="scoreVal">0</span> | Inimigos: <span id="pigsVal">3</span></div>
+    </div>
+
+    <div id="controls">
+        <button onclick="resetLevel()">Reiniciar Nível (R)</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+<script>
+    // --- CONFIGURAÇÃO INICIAL ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    
+    function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // --- VARIÁVEIS DE JOGO ---
+    let score = 0;
+    const GROUND_HEIGHT = 100;
+    const GRAVITY = 0.5;
+    const FRICTION = 0.98; // Atrito no ar/chão
+    const BOUNCE = 0.6; // O quanto ele quica
+    
+    // Posição do Estilingue
+    let slingX = 200;
+    let slingY = 0; // Será definido no reset
+
+    // --- CLASSES ---
+
+    class Entity {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.vx = 0;
+            this.vy = 0;
+            this.alive = true;
+        }
+    }
+
+    class Bird extends Entity {
+        constructor(x, y) {
+            super(x, y, '#ff4757'); // Vermelho
+            this.radius = 15;
+            this.isDragging = false;
+            this.isFlying = false;
+        }
+
+        draw() {
+            if (!this.alive) return;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Olho
+            ctx.beginPath();
+            ctx.arc(this.x + 5, this.y - 5, 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(this.x + 7, this.y - 5, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            
+            // Bico
+            ctx.beginPath();
+            ctx.moveTo(this.x + 5, this.y + 2);
+            ctx.lineTo(this.x + 18, this.y + 5);
+            ctx.lineTo(this.x + 5, this.y + 8);
+            ctx.fillStyle = '#ffa502';
+            ctx.fill();
+        }
+
+        update() {
+            if (this.isFlying) {
+                this.vy += GRAVITY;
+                this.vx *= 0.995; // Resistência do ar
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Colisão com chão
+                if (this.y + this.radius > height - GROUND_HEIGHT) {
+                    this.y = height - GROUND_HEIGHT - this.radius;
+                    this.vy *= -BOUNCE;
+                    this.vx *= FRICTION; // Atrito com chão
+                    
+                    // Parar se estiver muito lento
+                    if (Math.abs(this.vx) < 0.1) this.vx = 0;
+                    if (Math.abs(this.vy) < 0.5) this.vy = 0;
+                }
+                
+                // Colisão com paredes
+                if (this.x + this.radius > width || this.x - this.radius < 0) {
+                    this.vx *= -BOUNCE;
+                    this.x = this.x > width ? width - this.radius : this.radius;
+                }
+            }
+        }
+    }
+
+    class Pig extends Entity {
+        constructor(x, y) {
+            super(x, y, '#2ed573'); // Verde
+            this.radius = 15;
+        }
+
+        draw() {
+            if (!this.alive) return;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.strokeStyle = '#2f3542';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Focinho
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y + 2, 6, 4, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#7bed9f';
+            ctx.fill();
+        }
+    }
+
+    class Block extends Entity {
+        constructor(x, y, w, h) {
+            super(x, y, '#e1b12c'); // Madeira
+            this.w = w;
+            this.h = h;
+            this.maxHp = 20;
+            this.hp = 20;
+        }
+
+        draw() {
+            if (!this.alive) return;
+            ctx.fillStyle = this.hp < 10 ? '#cd6133' : this.color; // Fica mais escuro se danificado
+            ctx.fillRect(this.x, this.y, this.w, this.h);
+            ctx.strokeStyle = '#5d4037';
+            ctx.strokeRect(this.x, this.y, this.w, this.h);
+            
+            // Efeito de madeira (linhas simples)
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x + this.w, this.y + this.h);
+            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+            ctx.stroke();
+        }
+    }
+
+    // --- INSTÂNCIAS ---
+    let bird;
+    let pigs = [];
+    let blocks = [];
+    let particles = []; // Efeitos de explosão
+
+    function resetLevel() {
+        score = 0;
+        slingY = height - GROUND_HEIGHT - 100;
         
-        <div id="interaction-menu">
-            <h2 style="color:white; margin-top:0; font-weight:800; letter-spacing: 2px;">ACESSO AO EVENTO</h2>
-            <button class="btn btn-pix" onclick="processEntry('pix')">COBRAR PIX (R$ 50)</button>
-            <button class="btn btn-list" onclick="processEntry('lista')">LISTA VIP (Grátis)</button>
-        </div>
+        // Criar Pássaro
+        bird = new Bird(slingX, slingY);
+        
+        // Limpar arrays
+        pigs = [];
+        blocks = [];
+        particles = [];
 
-        <div id="instructions">Clique para focar | WASD Move | ESPAÇO Pula | E Interage</div>
-    </div>
+        // Construir Estrutura (Castelo simples)
+        let startX = width - 400;
+        let groundY = height - GROUND_HEIGHT;
 
-    <div id="mobile-controls">
-        <div id="stick-left" class="control-pad"></div>
-        <div class="jump-btn" onclick="jump()">PULAR</div>
-    </div>
+        // Base
+        blocks.push(new Block(startX, groundY - 80, 20, 80)); // Pilar esq
+        blocks.push(new Block(startX + 100, groundY - 80, 20, 80)); // Pilar dir
+        blocks.push(new Block(startX - 10, groundY - 90, 140, 20)); // Teto 1
 
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
+        // Segundo andar
+        blocks.push(new Block(startX + 20, groundY - 150, 20, 60)); 
+        blocks.push(new Block(startX + 80, groundY - 150, 20, 60));
+        blocks.push(new Block(startX + 10, groundY - 160, 100, 10)); // Teto 2
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { Octree } from 'three/addons/math/Octree.js';
-        import { Capsule } from 'three/addons/math/Capsule.js';
-        import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+        // Porcos
+        pigs.push(new Pig(startX + 60, groundY - 40)); // Porco baixo
+        pigs.push(new Pig(startX + 60, groundY - 120)); // Porco cima
+        pigs.push(new Pig(startX + 60, groundY - 180)); // Porco topo
 
-        // --- GERADOR DE TEXTURAS PROCEDURAIS V5 ---
-        function createTexture(type, color1, color2) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512;
-            const ctx = canvas.getContext('2d');
+        updateUI();
+    }
 
-            if (type === 'concrete') {
-                ctx.fillStyle = color1; ctx.fillRect(0,0,512,512);
-                for(let i=0; i<50000; i++) {
-                    ctx.fillStyle = Math.random()>0.5 ? color2 : color1;
-                    ctx.globalAlpha = 0.1; ctx.fillRect(Math.random()*512, Math.random()*512, 2, 2);
-                }
-            } else if (type === 'wood_planks') {
-                ctx.fillStyle = color1; ctx.fillRect(0,0,512,512);
-                ctx.strokeStyle = color2; ctx.lineWidth = 2;
-                for(let i=0; i<512; i+=64) {
-                    ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(512,i); ctx.stroke();
-                     // Variação de cor nas tábuas
-                    ctx.fillStyle = Math.random()>0.5 ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
-                    ctx.fillRect(0, i+2, 512, 60);
-                }
-            } else if (type === 'stars') {
-                ctx.fillStyle = '#000'; ctx.fillRect(0,0,512,512);
-                ctx.fillStyle = '#fff';
-                for(let i=0; i<1000; i++) {
-                    const size = Math.random()*1.5;
-                    ctx.fillRect(Math.random()*512, Math.random()*512, size, size);
+    // --- LÓGICA DE FÍSICA E COLISÃO ---
+    
+    function checkCollisions() {
+        if (!bird.isFlying) return;
+
+        // Colisão Pássaro vs Porcos (Círculo vs Círculo simplificado)
+        pigs.forEach(pig => {
+            if (!pig.alive) return;
+            let dx = bird.x - pig.x;
+            let dy = bird.y - pig.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < bird.radius + pig.radius + 5) {
+                // Se o pássaro estiver rápido o suficiente
+                if (Math.abs(bird.vx) > 2 || Math.abs(bird.vy) > 2) {
+                    pig.alive = false;
+                    score += 500;
+                    createParticles(pig.x, pig.y, pig.color);
+                    // Leve rebote no pássaro
+                    bird.vx *= 0.8; 
                 }
             }
+        });
 
-            const tex = new THREE.CanvasTexture(canvas);
-            tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
-            return tex;
-        }
-
-        const tex = {
-            asphalt: createTexture('concrete', '#1a1a1a', '#2a2a2a'),
-            sidewalk: createTexture('concrete', '#888888', '#999999'),
-            wallInternal: createTexture('concrete', '#222222', '#333333'),
-            floorWood: createTexture('wood_planks', '#3e2723', '#2d1b18'),
-            stars: createTexture('stars', null, null)
-        };
-        tex.asphalt.repeat.set(20,20); tex.sidewalk.repeat.set(5,20);
-        tex.wallInternal.repeat.set(4,4); tex.floorWood.repeat.set(8,8);
-
-        // --- ENGINE VARIABLES ---
-        let camera, scene, renderer, clock;
-        const worldOctree = new Octree();
-        const playerCollider = new Capsule(new THREE.Vector3(0, 0.35, 0), new THREE.Vector3(0, 1, 0), 0.35);
-        const playerVelocity = new THREE.Vector3();
-        const playerDirection = new THREE.Vector3();
-        let playerOnFloor = false; const GRAVITY = 30;
-        const keyStates = {};
-        const npcs = [], waitingLine = [], movingLights = [];
-        const gameState = { drinks: 0, invites: 0, money: 0, invitesForDrink: 0 };
-        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-
-        init();
-        animate();
-
-        function init() {
-            RectAreaLightUniformsLib.init(); clock = new THREE.Clock();
-            scene = new THREE.Scene();
-            // CÉU ESTRELADO
-            const skyGeo = new THREE.SphereGeometry(500, 32, 32);
-            const skyMat = new THREE.MeshBasicMaterial({ map: tex.stars, side: THREE.BackSide });
-            scene.add(new THREE.Mesh(skyGeo, skyMat));
-            // Lua
-            const moon = new THREE.Mesh(new THREE.CircleGeometry(20, 32), new THREE.MeshBasicMaterial({color:0xffffcc}));
-            moon.position.set(-100, 200, -300); scene.add(moon);
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            camera.rotation.order = 'YXZ';
-            renderer = new THREE.WebGLRenderer({ antialias: true }); // Antialias ligado para qualidade
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
-            document.body.appendChild(renderer.domElement);
-
-            // ILUMINAÇÃO AMBIENTE
-            const hemiLight = new THREE.HemisphereLight(0x444488, 0x000000, 0.2); scene.add(hemiLight);
-
-            // --- CONSTRUÇÃO DO NÍVEL FÍSICO (MAIOR E MELHOR) ---
-            const levelGroup = new THREE.Group();
-            const wallMat = new THREE.MeshStandardMaterial({ map: tex.wallInternal, roughness: 0.9 });
-            const floorMat = new THREE.MeshStandardMaterial({ map: tex.floorWood, roughness: 0.5, metalness: 0.1 });
-
-            // 1. Externo (Rua/Calçada)
-            const street = new THREE.Mesh(new THREE.BoxGeometry(200, 1, 200), new THREE.MeshStandardMaterial({map:tex.asphalt}));
-            street.position.y = -0.5; levelGroup.add(street);
-            const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(25, 0.4, 200), new THREE.MeshStandardMaterial({map:tex.sidewalk}));
-            sidewalk.position.set(12.5, -0.2, 0); levelGroup.add(sidewalk);
-
-            // 2. Estrutura Principal (Mais Larga: 30x40)
-            const bWidth = 30, bDepth = 40, bHeight = 10; const bX = 30, bZ = 0;
-            // Pisos
-            const floor1 = new THREE.Mesh(new THREE.BoxGeometry(bWidth-1, 0.2, bDepth-1), floorMat);
-            floor1.position.set(bX, 0.1, bZ); levelGroup.add(floor1);
-            const floor2 = new THREE.Mesh(new THREE.BoxGeometry(bWidth-1, 0.2, bDepth-1), floorMat);
-            floor2.position.set(bX, 6, bZ); levelGroup.add(floor2);
-
-            // Paredes Térreo e Rooftop (Laterais e Fundo)
-            const walls = [
-                {s:[1, bHeight, bDepth], p:[bX + bWidth/2, bHeight/2, bZ]}, // Dir
-                {s:[1, bHeight, bDepth], p:[bX - bWidth/2, bHeight/2, bZ]}, // Esq
-                {s:[bWidth, bHeight, 1], p:[bX, bHeight/2, bZ - bDepth/2]}, // Fundo
-            ];
-            walls.forEach(w => {
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(...w.s), wallMat); mesh.position.set(...w.p);
-                mesh.castShadow=true; mesh.receiveShadow=true; levelGroup.add(mesh);
-            });
-            // Parede Frontal (Com entrada)
-            const wFront1 = new THREE.Mesh(new THREE.BoxGeometry(10, bHeight, 1), wallMat); wFront1.position.set(bX-10, bHeight/2, bZ+bDepth/2); levelGroup.add(wFront1);
-            const wFront2 = new THREE.Mesh(new THREE.BoxGeometry(10, bHeight, 1), wallMat); wFront2.position.set(bX+10, bHeight/2, bZ+bDepth/2); levelGroup.add(wFront2);
-            const wFrontTop = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 1), wallMat); wFrontTop.position.set(bX, 8, bZ+bDepth/2); levelGroup.add(wFrontTop);
-
-            // 3. RAMPA DE ACESSO CORRIGIDA (Mais larga, ângulo suave)
-            const rampLen = 20, rampWidth = 6, rampRise = 5.9;
-            const rampGeo = new THREE.BoxGeometry(rampWidth, 0.2, rampLen);
-            const rampMat = new THREE.MeshStandardMaterial({color:0x333333, roughness:1});
-            const ramp = new THREE.Mesh(rampGeo, rampMat);
-            // Posiciona o centro da rampa para que a base toque o chão e o topo toque o 2º andar
-            ramp.position.set(bX + 8, rampRise/2 + 0.1, bZ + 5); 
-            ramp.rotation.x = -Math.asin(rampRise/rampLen);
-            levelGroup.add(ramp);
-
-            // 4. Paredes dos Banheiros (Térreo Fundo)
-            const wcDivisor = new THREE.Mesh(new THREE.BoxGeometry(1, 6, 15), wallMat);
-            wcDivisor.position.set(bX, 3, bZ - bDepth/2 + 7.5); levelGroup.add(wcDivisor);
-            const wcFront = new THREE.Mesh(new THREE.BoxGeometry(bWidth, 6, 1), wallMat);
-            wcFront.position.set(bX, 3, bZ - bDepth/2 + 15); 
-            // Buracos para portas seriam complexos com BoxGeometry, faremos paredes parciais
-            // Simplificação: Paredes sólidas para o colisor, visualmente colocaremos portas depois.
-            levelGroup.add(wcFront);
-
-            // 5. Parapeitos Rooftop (Segurança)
-            const railMat = new THREE.MeshStandardMaterial({color:0x555555, metalness:0.8});
-            const railFront = new THREE.Mesh(new THREE.BoxGeometry(bWidth, 1.2, 0.2), railMat);
-            railFront.position.set(bX, 6.6, bZ+bDepth/2-0.5); levelGroup.add(railFront);
-            // (As outras paredes já servem de parapeito alto)
-
-            scene.add(levelGroup);
-            worldOctree.fromGraphNode(levelGroup);
-
-            // --- DECORAÇÃO & ILUMINAÇÃO DINÂMICA (Sem Colisão) ---
+        // Colisão Pássaro vs Blocos (Círculo vs Retângulo)
+        blocks.forEach(block => {
+            if (!block.alive) return;
             
-            // Letreiro Neon
-            createNeonSign("ROOFTOP CLUB", 0xff00aa, bX, 7, bZ+bDepth/2+0.6);
-            // Placas WC
-            createSign("WC H", bX-5, 4, bZ-bDepth/2+15.6, 0x0055ff);
-            createSign("WC M", bX+5, 4, bZ-bDepth/2+15.6, 0xff5500);
+            // Ponto mais próximo do círculo no retângulo
+            let testX = bird.x;
+            let testY = bird.y;
 
-            // PALCOS DJ & SOM (Térreo e Rooftop)
-            setupDJBooth(new THREE.Vector3(bX, 0.2, bZ-10), 0xff0055); // Térreo Vermelho
-            setupDJBooth(new THREE.Vector3(bX, 6.2, bZ-10), 0x00aaff); // Rooftop Azul
+            if (bird.x < block.x) testX = block.x;
+            else if (bird.x > block.x + block.w) testX = block.x + block.w;
 
-            // ÁREAS LOUNGE (Sofás e Mesas)
-            setupLounge(new THREE.Vector3(bX-10, 0.2, bZ+10));
-            setupLounge(new THREE.Vector3(bX+10, 6.2, bZ+10));
+            if (bird.y < block.y) testY = block.y;
+            else if (bird.y > block.y + block.h) testY = block.y + block.h;
 
-            // CARROS NA RUA
-            generateCars();
+            let distX = bird.x - testX;
+            let distY = bird.y - testY;
+            let distance = Math.sqrt(distX*distX + distY*distY);
 
-            setupInputs();
-            for(let i=0; i<25; i++) spawnNPC(); // Mais NPCs
-            window.addEventListener('resize', onWindowResize);
-        }
-
-        // --- SISTEMAS DE DECORAÇÃO ---
-        function setupDJBooth(pos, color) {
-            const group = new THREE.Group(); group.position.copy(pos);
-            // Mesa
-            const table = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 1.5), new THREE.MeshStandardMaterial({color:0x111}));
-            table.position.y = 0.6; group.add(table);
-            // Caixas de Som
-            const speakerGeo = new THREE.BoxGeometry(1.5, 3, 1.5);
-            const speakerMat = new THREE.MeshStandardMaterial({color:0x222});
-            const s1 = new THREE.Mesh(speakerGeo, speakerMat); s1.position.set(-3.5, 1.5, 0); group.add(s1);
-            const s2 = new THREE.Mesh(speakerGeo, speakerMat); s2.position.set(3.5, 1.5, 0); group.add(s2);
-            // Treliça de Luzes
-            const truss = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshStandardMaterial({color:0x555, metalness:0.8}));
-            truss.position.set(0, 5, 0); group.add(truss);
-
-            // ILUMINAÇÃO DINÂMICA REAL (Moving Heads)
-            // Adiciona 4 luzes que se movem por palco
-            for(let i=0; i<4; i++) {
-                const xOffset = (i-1.5)*2.5;
-                createMovingHead(new THREE.Vector3(pos.x+xOffset, pos.y+5, pos.z), color, i*0.5);
-            }
-            scene.add(group);
-        }
-
-        function createMovingHead(pos, color, timeOffset) {
-            // O aparelho físico
-            const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.8), new THREE.MeshStandardMaterial({color:0x333}));
-            fixture.position.copy(pos); fixture.rotation.x = Math.PI/2;
-            scene.add(fixture);
-
-            // A LUZ Real
-            const spot = new THREE.SpotLight(color, 100);
-            spot.position.copy(pos);
-            spot.angle = 0.4; spot.penumbra = 0.3; spot.decay = 1.5; distance: 50;
-            spot.castShadow = true; // Sombra dinâmica! (Pode pesar no mobile)
-            spot.shadow.mapSize.set(512, 512); // Resolução baixa para performance
-            
-            const target = new THREE.Object3D();
-            spot.target = target;
-            scene.add(spot); scene.add(target);
-
-            movingLights.push({ spot, target, posBase: pos.clone(), offset: timeOffset });
-        }
-
-        function setupLounge(pos) {
-            const group = new THREE.Group(); group.position.copy(pos);
-            // Sofá em L
-            const sofaMat = new THREE.MeshStandardMaterial({color:0x880022, roughness:1});
-            const s1 = new THREE.Mesh(new THREE.BoxGeometry(6, 0.8, 2), sofaMat); s1.position.set(0, 0.4, -2); group.add(s1);
-            const s2 = new THREE.Mesh(new THREE.BoxGeometry(2, 0.8, 4), sofaMat); s2.position.set(-2, 0.4, 1); group.add(s2);
-            // Mesinha de centro
-            const table = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 0.5, 16), new THREE.MeshStandardMaterial({color:0x111, metalness:0.5, roughness:0.2}));
-            table.position.set(0.5, 0.25, 0.5); group.add(table);
-            scene.add(group);
-        }
-
-        function createNeonSign(text, color, x, y, z) {
-            const canvas = document.createElement('canvas'); canvas.width=512; canvas.height=128;
-            const ctx = canvas.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,512,128);
-            ctx.font='900 80px Montserrat'; ctx.fillStyle='#fff'; ctx.textAlign='center';
-            ctx.shadowColor='#'+color.toString(16); ctx.shadowBlur=30; ctx.fillText(text, 256, 90);
-            const tex = new THREE.CanvasTexture(canvas);
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(10, 2.5), new THREE.MeshBasicMaterial({map:tex, transparent:true}));
-            mesh.position.set(x,y,z); scene.add(mesh);
-            const light = new THREE.PointLight(color, 5, 15); light.position.set(x,y,z+1); scene.add(light);
-        }
-        function createSign(text, x, y, z, color) {
-            const canvas = document.createElement('canvas'); canvas.width=256; canvas.height=128;
-            const ctx = canvas.getContext('2d'); ctx.fillStyle='#'+color.toString(16); ctx.fillRect(0,0,256,128);
-            ctx.font='900 60px Montserrat'; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(text, 128, 85);
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 1.5), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(canvas)}));
-            mesh.position.set(x,y,z); scene.add(mesh);
-        }
-
-        function generateCars() {
-             for(let i=0; i<8; i++) {
-                 const z = -50 + i*15; const color = Math.random()*0xffffff;
-                 const car = new THREE.Group(); car.position.set(Math.random()*-5 - 5, 0.8, z);
-                 car.add(new THREE.Mesh(new THREE.BoxGeometry(4.5, 1, 9), new THREE.MeshStandardMaterial({color:color}))); // Chassis
-                 const cabin = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.8, 5), new THREE.MeshStandardMaterial({color:0x333})); cabin.position.y=0.9; car.add(cabin);
-                 scene.add(car);
-             }
-        }
-
-        // --- GAMEPLAY LOGIC (Player, NPCs) ---
-        // (Mantida da V4, focada na integração com o novo cenário)
-        function updatePlayer(dt) {
-            let speed = playerOnFloor ? 18 : 5; // Mais rápido no chão
-            if (keyStates['KeyW'] || (isMobile && mobileMove)) playerVelocity.add(getForwardVector().multiplyScalar(speed * dt));
-            if (keyStates['KeyS']) playerVelocity.add(getForwardVector().multiplyScalar(-speed * dt));
-            if (keyStates['KeyA']) playerVelocity.add(getSideVector().multiplyScalar(-speed * dt));
-            if (keyStates['KeyD']) playerVelocity.add(getSideVector().multiplyScalar(speed * dt));
-            
-            let damping = Math.exp(-8 * dt) - 1; // Mais atrito
-            if(!playerOnFloor) { playerVelocity.y -= GRAVITY * dt; damping *= 0.2; }
-            playerVelocity.addScaledVector(playerVelocity, damping);
-            playerCollider.translate(playerVelocity.clone().multiplyScalar(dt));
-            
-            const result = worldOctree.capsuleIntersect(playerCollider);
-            playerOnFloor = false;
-            if (result) {
-                playerOnFloor = result.normal.y > 0;
-                if (!playerOnFloor) playerVelocity.addScaledVector(result.normal, -result.normal.dot(playerVelocity));
-                playerCollider.translate(result.normal.multiplyScalar(result.depth));
-            }
-            camera.position.copy(playerCollider.end);
-            if(camera.position.y < -20) { playerCollider.start.set(25,0.35,50); playerCollider.end.set(25,1,50); playerVelocity.set(0,0,0); }
-        }
-
-        function getForwardVector() { camera.getWorldDirection(playerDirection); playerDirection.y = 0; playerDirection.normalize(); return playerDirection; }
-        function getSideVector() { camera.getWorldDirection(playerDirection); playerDirection.y = 0; playerDirection.normalize(); playerDirection.cross(camera.up); return playerDirection; }
-        window.jump = function() { if(playerOnFloor) playerVelocity.y = 14; }
-
-        function spawnNPC() {
-            const canvas = document.createElement('canvas'); canvas.width=64; canvas.height=128;
-            const ctx = canvas.getContext('2d'); ctx.fillStyle=`hsl(${Math.random()*360},70%,60%)`; ctx.fillRect(10,30,44,90);
-            ctx.fillStyle='#ffdbac'; ctx.beginPath(); ctx.arc(32,20,15,0,Math.PI*2); ctx.fill();
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(canvas)}));
-            sprite.scale.set(1, 1.8, 1);
-            sprite.position.set(Math.random()*10 + 15, 0.9, Math.random()*100 + 50); // Na calçada longe
-            sprite.userData = { state: 'street', id: Math.random() };
-            scene.add(sprite); npcs.push(sprite);
-        }
-
-        function updateNPCs(dt, time) {
-            npcs.forEach(npc => {
-                if(npc.userData.state === 'street') {
-                    npc.position.z -= dt * 3; // Andam em direção à balada
-                    if(npc.position.z < 60 && camera.position.distanceTo(npc.position) < 4) {
-                        gameState.invites++; gameState.invitesForDrink++; 
-                        document.getElementById('invites-count').innerText = gameState.invites;
-                        if(gameState.invitesForDrink >= 5) { gameState.drinks++; gameState.invitesForDrink=0; document.getElementById('drink-count').innerText=gameState.drinks; }
-                        npc.userData.state = 'line'; waitingLine.push(npc);
-                        npc.position.set(15, 1.1, 55 - (waitingLine.length * 1.5)); // Fila na entrada
+            if (distance <= bird.radius) {
+                // Impacto
+                let impact = Math.abs(bird.vx) + Math.abs(bird.vy);
+                if (impact > 3) {
+                    block.hp -= impact * 3;
+                    if (block.hp <= 0) {
+                        block.alive = false;
+                        score += 100;
+                        createParticles(block.x + block.w/2, block.y + block.h/2, '#deb887');
                     }
-                    if(npc.position.z < -50) npc.position.z = 150; // Loop
-                } else if (npc.userData.state === 'dancing') {
-                    npc.position.y = npc.userData.baseY + Math.abs(Math.sin(time*8 + npc.userData.id))*0.3;
+                    // Ricochete simples
+                    bird.vx *= -0.5;
+                    bird.vy *= -0.5;
+                } else {
+                    // Parar se bater devagar
+                    bird.vx = 0; 
                 }
+            }
+        });
+    }
+
+    function createParticles(x, y, color) {
+        for(let i=0; i<10; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10,
+                life: 1.0,
+                color: color
             });
         }
-        function checkInteraction() {
-            if(waitingLine.length>0 && camera.position.distanceTo(waitingLine[0].position)<5) {
-                document.exitPointerLock(); document.getElementById('interaction-menu').style.display='block';
+    }
+
+    function updateUI() {
+        document.getElementById('scoreVal').innerText = score;
+        const pigsAlive = pigs.filter(p => p.alive).length;
+        document.getElementById('pigsVal').innerText = pigsAlive;
+        
+        if (pigsAlive === 0 && !bird.isFlying && !bird.isDragging) {
+            // Vitória simples
+            ctx.font = "50px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("VITÓRIA!", width/2 - 100, height/2);
+        }
+    }
+
+    // --- CONTROLE MOUSE/TOQUE ---
+    let isMouseDown = false;
+
+    canvas.addEventListener('mousedown', (e) => {
+        let dx = e.clientX - bird.x;
+        let dy = e.clientY - bird.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < 50 && !bird.isFlying) { // Raio de "agarre"
+            bird.isDragging = true;
+            isMouseDown = true;
+        }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (bird.isDragging) {
+            let mouseX = e.clientX;
+            let mouseY = e.clientY;
+            
+            // Limitar o puxão
+            let dx = mouseX - slingX;
+            let dy = mouseY - slingY;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            const MAX_PULL = 100;
+            
+            if (dist > MAX_PULL) {
+                let angle = Math.atan2(dy, dx);
+                bird.x = slingX + Math.cos(angle) * MAX_PULL;
+                bird.y = slingY + Math.sin(angle) * MAX_PULL;
+            } else {
+                bird.x = mouseX;
+                bird.y = mouseY;
             }
         }
-        window.processEntry = function(type) {
-            if(waitingLine.length===0) return;
-            const npc = waitingLine.shift();
-            if(type==='pix') { gameState.money+=50; document.getElementById('money-count').innerText=gameState.money; }
-            // Entra na festa (50% chance rooftop)
-            const isRoof = Math.random()>0.5;
-            npc.position.set(30+(Math.random()-0.5)*20, isRoof?6.9:0.9, (Math.random()-0.5)*30);
-            npc.userData.state = 'dancing'; npc.userData.baseY = npc.position.y;
-            waitingLine.forEach((n,i) => n.position.z = 55 - (i*1.5));
-            document.getElementById('interaction-menu').style.display='none'; document.body.requestPointerLock();
-        };
+    });
 
-        // --- INPUTS ---
-        let mobileMove = false;
-        function setupInputs() {
-            document.addEventListener('keydown', e => { keyStates[e.code]=true; if(e.code==='Space')jump(); if(e.code==='KeyE')checkInteraction(); });
-            document.addEventListener('keyup', e => keyStates[e.code]=false);
-            document.addEventListener('mousedown', () => { if(document.getElementById('interaction-menu').style.display!=='block') document.body.requestPointerLock(); });
-            document.body.addEventListener('mousemove', e => { if(document.pointerLockElement===document.body) { camera.rotation.y-=e.movementX/600; camera.rotation.x-=e.movementY/600; }});
-            const s=document.getElementById('stick-left'); s.addEventListener('touchstart',e=>{e.preventDefault();mobileMove=true;}); s.addEventListener('touchend',e=>{e.preventDefault();mobileMove=false;});
-            document.addEventListener('touchmove',e=>{if(e.touches[0].clientX>window.innerWidth/2) camera.rotation.y-=(e.touches[0].clientX-window.innerWidth*0.75)*0.0002;});
-        }
-        function onWindowResize() { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); }
-
-        function animate() {
-            const dt = Math.min(0.05, clock.getDelta()); const time = clock.getElapsedTime();
-            updatePlayer(dt); updateNPCs(dt, time);
+    window.addEventListener('mouseup', () => {
+        if (bird.isDragging) {
+            bird.isDragging = false;
+            bird.isFlying = true;
             
-            // ATUALIZAÇÃO DAS LUZES DINÂMICAS (Moving Heads)
-            movingLights.forEach(ml => {
-                // Faz o alvo da luz se mover em círculos/elipses pela pista
-                ml.target.position.x = ml.posBase.x + Math.sin(time * 2 + ml.offset) * 10;
-                ml.target.position.z = ml.posBase.z + Math.cos(time * 1.5 + ml.offset) * 15;
-                // Ocasionalmente muda a cor (efeito strobo lento)
-                if(Math.random() > 0.995) ml.spot.color.setHSL(Math.random(), 1, 0.5);
-            });
-
-            renderer.render(scene, camera); requestAnimationFrame(animate);
+            // Calcular velocidade baseada no puxão (Inverso do vetor)
+            let dx = slingX - bird.x;
+            let dy = slingY - bird.y;
+            
+            bird.vx = dx * 0.15; // Força do lançamento
+            bird.vy = dy * 0.15;
         }
-    </script>
+        isMouseDown = false;
+    });
+
+    // Tecla R para reiniciar
+    window.addEventListener('keydown', (e) => {
+        if(e.key.toLowerCase() === 'r') resetLevel();
+    });
+
+    // --- LOOP PRINCIPAL ---
+    function loop() {
+        // Limpar tela
+        ctx.clearRect(0, 0, width, height);
+
+        // Desenhar Chão
+        ctx.fillStyle = '#7cfc00'; // Grama
+        ctx.fillRect(0, height - GROUND_HEIGHT, width, GROUND_HEIGHT);
+        ctx.fillStyle = '#654321'; // Terra
+        ctx.fillRect(0, height - GROUND_HEIGHT + 20, width, GROUND_HEIGHT);
+
+        // Desenhar Estilingue (Parte de trás)
+        ctx.beginPath();
+        ctx.moveTo(slingX, slingY);
+        ctx.lineTo(slingX - 10, height - GROUND_HEIGHT);
+        ctx.lineTo(slingX + 10, height - GROUND_HEIGHT);
+        ctx.fillStyle = '#8B4513';
+        ctx.fill();
+
+        // Linha elástica (Se arrastando)
+        if (bird.isDragging) {
+            ctx.beginPath();
+            ctx.moveTo(slingX - 10, slingY);
+            ctx.lineTo(bird.x, bird.y);
+            ctx.moveTo(slingX + 10, slingY);
+            ctx.lineTo(bird.x, bird.y);
+            ctx.strokeStyle = '#301808';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+        }
+
+        // Atualizar e Desenhar Entidades
+        blocks.forEach(b => b.draw());
+        pigs.forEach(p => p.draw());
+
+        bird.update();
+        bird.draw();
+        
+        checkCollisions();
+        updateUI();
+
+        // Partículas
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.2; // Gravidade partículas
+            p.life -= 0.05;
+            
+            ctx.globalAlpha = p.life;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+
+            if (p.life <= 0) particles.splice(i, 1);
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    // Iniciar
+    resetLevel();
+    loop();
+
+</script>
 </body>
 </html>
