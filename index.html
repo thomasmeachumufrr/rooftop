@@ -1,128 +1,102 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>OSINT Arsenal – Tudo em 1 clique</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <title>OSINT Arsenal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- Cores dinâmicas -->
+  <meta name="theme-color" content="#111">
+  <!-- PWA -->
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiT1NJTlQgQXJzZW5hbCIsInNob3J0X25hbWUiOiJPU0lOVCIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMTExIiwidGhlbWVfY29sb3IiOiIjMTExIn0=">
   <style>
-    :root{--bg:#111;--card:#1c1c1c;--text:#0f0;--accent:#0ff}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-    h1{text-align:center;margin:20px 0;font-size:2em}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px;padding:20px}
+    :root{
+      --bg:#111;--card:#1c1c1c;--text:#0f0;--accent:#0ff;
+    }
+    [data-theme="light"]{
+      --bg:#f5f5f5;--card:#fff;--text:#000;--accent:#00c;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;transition:.3s}
+    header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px}
+    #search{padding:8px 12px;border:none;border-radius:4px;width:160px}
+    #toggle{cursor:pointer;font-size:1.4em}
+    h1{margin:0 10px 20px;font-size:1.8em;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax 140px,1fr));gap:15px;padding:20px}
     .card{background:var(--card);border-radius:8px;text-align:center;padding:15px;transition:.3s}
     .card:hover{transform:scale(1.05);box-shadow:0 0 10px var(--accent)}
     .card img{width:48px;height:48px;margin-bottom:8px}
     .card a{color:var(--text);text-decoration:none;font-size:.9em}
+    .hidden{display:none}
   </style>
 </head>
 <body>
-  <h1>OSINT Arsenal</h1>
-  <div class="grid">
-    <!-- 1 -->
-    <div class="card">
-      <a href="https://www.maltego.com" target="_blank">
-        <img src="https://www.maltego.com/favicon.ico" alt="Maltego">
-        <div>Maltego</div>
-      </a>
-    </div>
-    <!-- 2 -->
-    <div class="card">
-      <a href="https://www.spiderfoot.net" target="_blank">
-        <img src="https://www.spiderfoot.net/favicon.ico" alt="SpiderFoot">
-        <div>SpiderFoot</div>
-      </a>
-    </div>
-    <!-- 3 -->
-    <div class="card">
-      <a href="https://github.com/laramies/theHarvester" target="_blank">
-        <img src="https://github.com/favicon.ico" alt="theHarvester">
-        <div>theHarvester</div>
-      </a>
-    </div>
-    <!-- 4 -->
-    <div class="card">
-      <a href="https://www.shodan.io" target="_blank">
-        <img src="https://www.shodan.io/static/img/favicon.png" alt="Shodan">
-        <div>Shodan</div>
-      </a>
-    </div>
-    <!-- 5 -->
-    <div class="card">
-      <a href="https://www.greynoise.io" target="_blank">
-        <img src="https://www.greynoise.io/favicon.ico" alt="GreyNoise">
-        <div>GreyNoise</div>
-      </a>
-    </div>
-    <!-- 6 -->
-    <div class="card">
-      <a href="https://intelx.io" target="_blank">
-        <img src="https://intelx.io/favicon.ico" alt="Intelligence X">
-        <div>Intelligence X</div>
-      </a>
-    </div>
-    <!-- 7 -->
-    <div class="card">
-      <a href="https://github.com/lanmaster53/recon-ng" target="_blank">
-        <img src="https://github.com/favicon.ico" alt="Recon-ng">
-        <div>Recon-ng</div>
-      </a>
-    </div>
-    <!-- 8 -->
-    <div class="card">
-      <a href="https://github.com/owasp-amass/amass" target="_blank">
-        <img src="https://github.com/favicon.ico" alt="Amass">
-        <div>Amass</div>
-      </a>
-    </div>
-    <!-- 9 -->
-    <div class="card">
-      <a href="https://hunter.io" target="_blank">
-        <img src="https://hunter.io/favicon.ico" alt="Hunter">
-        <div>Hunter.io</div>
-      </a>
-    </div>
-    <!-- 10 -->
-    <div class="card">
-      <a href="https://www.exploit-db.com/google-hacking-database" target="_blank">
-        <img src="https://www.exploit-db.com/favicon.ico" alt="Google Dorks">
-        <div>Google Dorks</div>
-      </a>
-    </div>
-    <!-- 11 -->
-    <div class="card">
-      <a href="https://www.dehashed.com" target="_blank">
-        <img src="https://www.dehashed.com/favicon.ico" alt="DeHashed">
-        <div>DeHashed</div>
-      </a>
-    </div>
-    <!-- 12 -->
-    <div class="card">
-      <a href="https://www.zoomeye.org" target="_blank">
-        <img src="https://www.zoomeye.org/favicon.ico" alt="ZoomEye">
-        <div>ZoomEye</div>
-      </a>
-    </div>
-    <!-- 13 -->
-    <div class="card">
-      <a href="https://yandex.com/images/" target="_blank">
-        <img src="https://yastatic.net/iconostasis/_/5vP6niRDz7VIEKGiyK5Fz3L3v2L.png" alt="Yandex">
-        <div>Yandex Images</div>
-      </a>
-    </div>
-    <!-- 14 -->
-    <div class="card">
-      <a href="https://whatsmyname.app" target="_blank">
-        <img src="https://whatsmyname.app/favicon.ico" alt="WhatsMyName">
-        <div>WhatsMyName</div>
-      </a>
-    </div>
-    <!-- 15 -->
-    <div class="card">
-      <a href="https://epieos.com" target="_blank">
-        <img src="https://epieos.com/favicon.ico" alt="Epieos">
-        <div>Epieos</div>
-      </a>
-    </div>
-  </div>
+<header>
+  <input id="search" placeholder="Buscar ferramenta…">
+  <span id="toggle">🌓</span>
+</header>
+<h1>OSINT Arsenal</h1>
+<div class="grid" id="grid"></div>
+
+<script>
+const tools=[
+{name:"Maltego",url:"https://www.maltego.com",icon:"https://www.maltego.com/favicon.ico"},
+{name:"SpiderFoot",url:"https://www.spiderfoot.net",icon:"https://www.spiderfoot.net/favicon.ico"},
+{name:"theHarvester",url:"https://github.com/laramies/theHarvester",icon:"https://github.com/favicon.ico"},
+{name:"Shodan",url:"https://www.shodan.io",icon:"https://www.shodan.io/static/img/favicon.png"},
+{name:"GreyNoise",url:"https://www.greynoise.io",icon:"https://www.greynoise.io/favicon.ico"},
+{name:"Intelligence X",url:"https://intelx.io",icon:"https://intelx.io/favicon.ico"},
+{name:"Recon-ng",url:"https://github.com/lanmaster53/recon-ng",icon:"https://github.com/favicon.ico"},
+{name:"Amass",url:"https://github.com/owasp-amass/amass",icon:"https://github.com/favicon.ico"},
+{name:"Hunter.io",url:"https://hunter.io",icon:"https://hunter.io/favicon.ico"},
+{name:"Google Dorks",url:"https://www.exploit-db.com/google-hacking-database",icon:"https://www.exploit-db.com/favicon.ico"},
+{name:"DeHashed",url:"https://www.dehashed.com",icon:"https://www.dehashed.com/favicon.ico"},
+{name:"ZoomEye",url:"https://www.zoomeye.org",icon:"https://www.zoomeye.org/favicon.ico"},
+{name:"Yandex Images",url:"https://yandex.com/images/",icon:"https://yastatic.net/iconostasis/_/5vP6niRDz7VIEKGiyK5Fz3L3v2L.png"},
+{name:"WhatsMyName",url:"https://whatsmyname.app",icon:"https://whatsmyname.app/favicon.ico"},
+{name:"Epieos",url:"https://epieos.com",icon:"https://epieos.com/favicon.ico"}
+];
+
+const grid=document.getElementById('grid');
+function render(list){
+  grid.innerHTML='';
+  list.forEach(t=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<a href="${t.url}" target="_blank"><img src="${t.icon}" alt="${t.name}"><div>${t.name}</div></a>`;
+    grid.appendChild(card);
+  });
+}
+render(tools);
+
+// Busca
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  render(tools.filter(t=>t.name.toLowerCase().includes(q)));
+});
+
+// Tema
+const toggle=document.getElementById('toggle');
+const html=document.documentElement;
+const saved=localStorage.getItem('theme')||'dark';
+html.setAttribute('data-theme',saved==='light'?'light':'dark');
+toggle.textContent=saved==='light'?'🌙':'☀️';
+toggle.onclick=()=>{
+  const current=html.getAttribute('data-theme');
+  const next=current==='dark'?'light':'dark';
+  html.setAttribute('data-theme',next);
+  localStorage.setItem('theme',next);
+  toggle.textContent=next==='light'?'🌙':'☀️';
+};
+
+// Service Worker básico para PWA offline
+if('serviceWorker' in navigator){
+  const sw='data:text/javascript;charset=utf-8,'+encodeURIComponent(`
+    const CACHE='osint-v1';
+    const FILES=['./'];
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
+    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+  `);
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw])));
+}
+</script>
 </body>
 </html>
