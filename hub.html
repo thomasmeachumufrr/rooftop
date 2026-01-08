@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus OSINT Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Variáveis Modo Claro (Padrão) */
+            --bg-color: #f3f4f6;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-color: #2563eb; /* Azul Royal */
+            --accent-hover: #1d4ed8;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+        }
+
+        .dark-mode {
+            /* Variáveis Modo Escuro */
+            --bg-color: #0f172a;
+            --header-bg: #1e293b;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-color: #3b82f6;
+            --accent-hover: #60a5fa;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-bg);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Botão Toggle Theme */
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .theme-btn:hover {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+        }
+
+        /* Barra de Busca */
+        .search-container {
+            max-width: 800px;
+            margin: 40px auto 20px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            outline: none;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Container Principal */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Categorias (Tags) */
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .cat-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        /* Grid de Ferramentas */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .tool-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(37, 99, 235, 0.1); /* Accent com opacidade */
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .card-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            background-color: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-btn {
+            text-decoration: none;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .card-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-network-wired"></i> Nexus OSINT
+        </div>
+        <div class="controls">
+            <button class="theme-btn" id="theme-toggle" aria-label="Alternar Tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <h1 style="margin-bottom: 15px; font-weight: 300;">Ferramentas de Inteligência</h1>
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar ferramenta (ex: Username, IP, Email...)">
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="categories">
+            <button class="cat-btn active" onclick="filterCategory('all')">Todos</button>
+            <button class="cat-btn" onclick="filterCategory('Username')">Username</button>
+            <button class="cat-btn" onclick="filterCategory('Email')">Email</button>
+            <button class="cat-btn" onclick="filterCategory('Domain')">Domínio/IP</button>
+            <button class="cat-btn" onclick="filterCategory('Social')">Social Media</button>
+            <button class="cat-btn" onclick="filterCategory('Images')">Imagens</button>
+            <button class="cat-btn" onclick="filterCategory('Maps')">Mapas</button>
+        </div>
+
+        <div class="tools-grid" id="tools-grid">
+            
+            <div class="tool-card" data-category="Username">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-user-secret"></i></div>
+                    <div class="card-title">Sherlock</div>
+                </div>
+                <span class="card-tag">Username</span>
+                <p class="card-desc">Procure por nomes de usuários em centenas de redes sociais automaticamente.</p>
+                <a href="https://github.com/sherlock-project/sherlock" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Username">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-id-card"></i></div>
+                    <div class="card-title">Namechk</div>
+                </div>
+                <span class="card-tag">Username</span>
+                <p class="card-desc">Verifique a disponibilidade de nomes de usuários e domínios em várias plataformas.</p>
+                <a href="https://namechk.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Domain">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
+                    <div class="card-title">Shodan</div>
+                </div>
+                <span class="card-tag">Domain / IoT</span>
+                <p class="card-desc">O mecanismo de busca para dispositivos conectados à Internet (IoT, Servidores).</p>
+                <a href="https://www.shodan.io/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Email">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+                    <div class="card-title">Have I Been Pwned</div>
+                </div>
+                <span class="card-tag">Email</span>
+                <p class="card-desc">Verifique se um email ou senha foi comprometido em vazamentos de dados.</p>
+                <a href="https://haveibeenpwned.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+             <div class="tool-card" data-category="Domain">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="card-title">Wayback Machine</div>
+                </div>
+                <span class="card-tag">Domain</span>
+                <p class="card-desc">Veja versões antigas de sites e páginas que já foram deletadas.</p>
+                <a href="https://archive.org/web/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Images">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-image"></i></div>
+                    <div class="card-title">TinEye</div>
+                </div>
+                <span class="card-tag">Images</span>
+                <p class="card-desc">Busca reversa de imagens para descobrir onde uma foto foi usada na web.</p>
+                <a href="https://tineye.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Email">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-at"></i></div>
+                    <div class="card-title">Hunter.io</div>
+                </div>
+                <span class="card-tag">Email</span>
+                <p class="card-desc">Encontre endereços de email profissionais associados a um domínio específico.</p>
+                <a href="https://hunter.io/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Domain">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
+                    <div class="card-title">DNS Dumpster</div>
+                </div>
+                <span class="card-tag">Domain</span>
+                <p class="card-desc">Ferramenta gratuita de pesquisa de domínio para encontrar registros DNS e subdomínios.</p>
+                <a href="https://dnsdumpster.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Maps">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="card-title">Google Earth Pro</div>
+                </div>
+                <span class="card-tag">Maps</span>
+                <p class="card-desc">Visualização de satélite detalhada e ferramentas históricas de imagens.</p>
+                <a href="https://www.google.com/earth/versions/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+             <div class="tool-card" data-category="Social">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-brands fa-twitter"></i></div>
+                    <div class="card-title">TweetDeck</div>
+                </div>
+                <span class="card-tag">Social</span>
+                <p class="card-desc">Monitoramento em tempo real de múltiplas timelines e listas do Twitter (X).</p>
+                <a href="https://tweetdeck.twitter.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+            
+        </div>
+    </div>
+
+    <footer>
+        <p>Nexus OSINT Hub &copy; 2024. Use com responsabilidade e ética.</p>
+    </footer>
+
+    <script>
+        // --- Lógica Dark Mode ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const icon = themeBtn.querySelector('i');
+        
+        // Checar preferência salva
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            
+            // Trocar ícone
+            if (isDark) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // --- Lógica de Busca ---
+        const searchInput = document.getElementById('search-input');
+        const cards = document.querySelectorAll('.tool-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+                const tag = card.querySelector('.card-tag').textContent.toLowerCase();
+                
+                if (title.includes(term) || desc.includes(term) || tag.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // --- Lógica de Categorias ---
+        function filterCategory(category) {
+            // Atualizar botões
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filtrar cards
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                if (category === 'all' || cardCat === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Limpar busca ao clicar em categoria
+            searchInput.value = '';
+        }
+    </script>
+</body>
+</html>
