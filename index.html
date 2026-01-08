@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clone Angry Birds - Engine Física</title>
+    <title>Angry Shapes - Versão Turbo</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: linear-gradient(to bottom, #87CEEB, #E0F7FA); /* Céu */
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
         }
@@ -87,13 +87,12 @@
     // --- VARIÁVEIS DE JOGO ---
     let score = 0;
     const GROUND_HEIGHT = 100;
-    const GRAVITY = 0.5;
-    const FRICTION = 0.98; // Atrito no ar/chão
-    const BOUNCE = 0.6; // O quanto ele quica
+    const GRAVITY = 0.45; // Gravidade levemente reduzida para voar mais longe
+    const FRICTION = 0.98; 
+    const BOUNCE = 0.5; 
     
-    // Posição do Estilingue
     let slingX = 200;
-    let slingY = 0; // Será definido no reset
+    let slingY = 0; 
 
     // --- CLASSES ---
 
@@ -110,7 +109,7 @@
 
     class Bird extends Entity {
         constructor(x, y) {
-            super(x, y, '#ff4757'); // Vermelho
+            super(x, y, '#ff4757'); 
             this.radius = 15;
             this.isDragging = false;
             this.isFlying = false;
@@ -126,7 +125,7 @@
             ctx.lineWidth = 2;
             ctx.stroke();
             
-            // Olho
+            // Olho (olhando para a direita)
             ctx.beginPath();
             ctx.arc(this.x + 5, this.y - 5, 4, 0, Math.PI * 2);
             ctx.fillStyle = 'white';
@@ -143,12 +142,20 @@
             ctx.lineTo(this.x + 5, this.y + 8);
             ctx.fillStyle = '#ffa502';
             ctx.fill();
+
+            // Sobrancelha (Raiva)
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y - 12);
+            ctx.lineTo(this.x + 10, this.y - 8);
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 3;
+            ctx.stroke();
         }
 
         update() {
             if (this.isFlying) {
                 this.vy += GRAVITY;
-                this.vx *= 0.995; // Resistência do ar
+                this.vx *= 0.998; // Menos resistência do ar
                 this.x += this.vx;
                 this.y += this.vy;
 
@@ -156,9 +163,8 @@
                 if (this.y + this.radius > height - GROUND_HEIGHT) {
                     this.y = height - GROUND_HEIGHT - this.radius;
                     this.vy *= -BOUNCE;
-                    this.vx *= FRICTION; // Atrito com chão
+                    this.vx *= FRICTION;
                     
-                    // Parar se estiver muito lento
                     if (Math.abs(this.vx) < 0.1) this.vx = 0;
                     if (Math.abs(this.vy) < 0.5) this.vy = 0;
                 }
@@ -174,8 +180,8 @@
 
     class Pig extends Entity {
         constructor(x, y) {
-            super(x, y, '#2ed573'); // Verde
-            this.radius = 15;
+            super(x, y, '#2ed573');
+            this.radius = 16;
         }
 
         draw() {
@@ -188,34 +194,43 @@
             ctx.lineWidth = 1;
             ctx.stroke();
 
-            // Focinho
             ctx.beginPath();
-            ctx.ellipse(this.x, this.y + 2, 6, 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(this.x, this.y + 2, 7, 5, 0, 0, Math.PI * 2);
             ctx.fillStyle = '#7bed9f';
             ctx.fill();
+            
+            // Olhos
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(this.x - 5, this.y - 6, 4, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(this.x + 5, this.y - 6, 4, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'black';
+            ctx.beginPath(); ctx.arc(this.x - 5, this.y - 6, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(this.x + 5, this.y - 6, 1.5, 0, Math.PI*2); ctx.fill();
         }
     }
 
     class Block extends Entity {
         constructor(x, y, w, h) {
-            super(x, y, '#e1b12c'); // Madeira
+            super(x, y, '#e1b12c');
             this.w = w;
             this.h = h;
-            this.maxHp = 20;
             this.hp = 20;
         }
 
         draw() {
             if (!this.alive) return;
-            ctx.fillStyle = this.hp < 10 ? '#cd6133' : this.color; // Fica mais escuro se danificado
+            ctx.fillStyle = this.hp < 10 ? '#cd6133' : this.color; 
             ctx.fillRect(this.x, this.y, this.w, this.h);
             ctx.strokeStyle = '#5d4037';
+            ctx.lineWidth = 2;
             ctx.strokeRect(this.x, this.y, this.w, this.h);
             
-            // Efeito de madeira (linhas simples)
+            // X na madeira
             ctx.beginPath();
             ctx.moveTo(this.x, this.y);
             ctx.lineTo(this.x + this.w, this.y + this.h);
+            ctx.moveTo(this.x + this.w, this.y);
+            ctx.lineTo(this.x, this.y + this.h);
             ctx.strokeStyle = 'rgba(0,0,0,0.1)';
             ctx.stroke();
         }
@@ -225,38 +240,45 @@
     let bird;
     let pigs = [];
     let blocks = [];
-    let particles = []; // Efeitos de explosão
+    let particles = [];
 
     function resetLevel() {
         score = 0;
-        slingY = height - GROUND_HEIGHT - 100;
+        slingY = height - GROUND_HEIGHT - 120; // Estilingue um pouco mais alto
         
-        // Criar Pássaro
         bird = new Bird(slingX, slingY);
-        
-        // Limpar arrays
         pigs = [];
         blocks = [];
         particles = [];
 
-        // Construir Estrutura (Castelo simples)
-        let startX = width - 400;
+        // Construir Estrutura (Castelo Maior)
+        let startX = width - 450;
         let groundY = height - GROUND_HEIGHT;
 
-        // Base
-        blocks.push(new Block(startX, groundY - 80, 20, 80)); // Pilar esq
-        blocks.push(new Block(startX + 100, groundY - 80, 20, 80)); // Pilar dir
-        blocks.push(new Block(startX - 10, groundY - 90, 140, 20)); // Teto 1
+        // Base Esquerda
+        blocks.push(new Block(startX, groundY - 100, 20, 100)); 
+        blocks.push(new Block(startX + 80, groundY - 100, 20, 100)); 
+        blocks.push(new Block(startX - 10, groundY - 110, 120, 10)); // Teto
 
-        // Segundo andar
-        blocks.push(new Block(startX + 20, groundY - 150, 20, 60)); 
-        blocks.push(new Block(startX + 80, groundY - 150, 20, 60));
-        blocks.push(new Block(startX + 10, groundY - 160, 100, 10)); // Teto 2
+        // Base Direita
+        blocks.push(new Block(startX + 150, groundY - 100, 20, 100));
+        blocks.push(new Block(startX + 230, groundY - 100, 20, 100));
+        blocks.push(new Block(startX + 140, groundY - 110, 120, 10)); // Teto
 
-        // Porcos
-        pigs.push(new Pig(startX + 60, groundY - 40)); // Porco baixo
-        pigs.push(new Pig(startX + 60, groundY - 120)); // Porco cima
-        pigs.push(new Pig(startX + 60, groundY - 180)); // Porco topo
+        // Segundo Andar (Ponte)
+        blocks.push(new Block(startX + 40, groundY - 120, 170, 10)); // Ponte longa
+
+        // Terceiro Andar
+        blocks.push(new Block(startX + 60, groundY - 180, 10, 60));
+        blocks.push(new Block(startX + 120, groundY - 180, 10, 60));
+        blocks.push(new Block(startX + 180, groundY - 180, 10, 60));
+        blocks.push(new Block(startX + 50, groundY - 190, 150, 10)); // Teto topo
+
+        // Porcos (Posicionados estrategicamente)
+        pigs.push(new Pig(startX + 50, groundY - 40)); 
+        pigs.push(new Pig(startX + 200, groundY - 40));
+        pigs.push(new Pig(startX + 125, groundY - 140)); // Meio
+        pigs.push(new Pig(startX + 125, groundY - 210)); // Topo (Rei)
 
         updateUI();
     }
@@ -266,7 +288,7 @@
     function checkCollisions() {
         if (!bird.isFlying) return;
 
-        // Colisão Pássaro vs Porcos (Círculo vs Círculo simplificado)
+        // Colisão Pássaro vs Porcos
         pigs.forEach(pig => {
             if (!pig.alive) return;
             let dx = bird.x - pig.x;
@@ -274,22 +296,20 @@
             let distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < bird.radius + pig.radius + 5) {
-                // Se o pássaro estiver rápido o suficiente
-                if (Math.abs(bird.vx) > 2 || Math.abs(bird.vy) > 2) {
+                // Mata mais fácil agora
+                if (Math.abs(bird.vx) > 1 || Math.abs(bird.vy) > 1) {
                     pig.alive = false;
                     score += 500;
                     createParticles(pig.x, pig.y, pig.color);
-                    // Leve rebote no pássaro
-                    bird.vx *= 0.8; 
+                    bird.vx *= 0.7; // Perde menos velocidade ao bater
                 }
             }
         });
 
-        // Colisão Pássaro vs Blocos (Círculo vs Retângulo)
+        // Colisão Pássaro vs Blocos
         blocks.forEach(block => {
             if (!block.alive) return;
             
-            // Ponto mais próximo do círculo no retângulo
             let testX = bird.x;
             let testY = bird.y;
 
@@ -304,20 +324,17 @@
             let distance = Math.sqrt(distX*distX + distY*distY);
 
             if (distance <= bird.radius) {
-                // Impacto
                 let impact = Math.abs(bird.vx) + Math.abs(bird.vy);
-                if (impact > 3) {
-                    block.hp -= impact * 3;
+                if (impact > 2) { // Mais sensível a dano
+                    block.hp -= impact * 4; // Causa mais dano
                     if (block.hp <= 0) {
                         block.alive = false;
                         score += 100;
                         createParticles(block.x + block.w/2, block.y + block.h/2, '#deb887');
                     }
-                    // Ricochete simples
-                    bird.vx *= -0.5;
-                    bird.vy *= -0.5;
+                    bird.vx *= -0.6; // Ricochete um pouco mais forte
+                    bird.vy *= -0.6;
                 } else {
-                    // Parar se bater devagar
                     bird.vx = 0; 
                 }
             }
@@ -325,12 +342,12 @@
     }
 
     function createParticles(x, y, color) {
-        for(let i=0; i<10; i++) {
+        for(let i=0; i<12; i++) {
             particles.push({
                 x: x,
                 y: y,
-                vx: (Math.random() - 0.5) * 10,
-                vy: (Math.random() - 0.5) * 10,
+                vx: (Math.random() - 0.5) * 15, // Explosão maior
+                vy: (Math.random() - 0.5) * 15,
                 life: 1.0,
                 color: color
             });
@@ -343,22 +360,26 @@
         document.getElementById('pigsVal').innerText = pigsAlive;
         
         if (pigsAlive === 0 && !bird.isFlying && !bird.isDragging) {
-            // Vitória simples
-            ctx.font = "50px Arial";
-            ctx.fillStyle = "black";
-            ctx.fillText("VITÓRIA!", width/2 - 100, height/2);
+            ctx.font = "bold 60px Segoe UI";
+            ctx.fillStyle = "#ff4757";
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 5;
+            ctx.strokeText("VITÓRIA!", width/2 - 130, height/2);
+            ctx.fillText("VITÓRIA!", width/2 - 130, height/2);
         }
     }
 
     // --- CONTROLE MOUSE/TOQUE ---
     let isMouseDown = false;
+    // Aumentei o range do elástico
+    const MAX_PULL = 150; 
 
     canvas.addEventListener('mousedown', (e) => {
         let dx = e.clientX - bird.x;
         let dy = e.clientY - bird.y;
         let dist = Math.sqrt(dx*dx + dy*dy);
         
-        if (dist < 50 && !bird.isFlying) { // Raio de "agarre"
+        if (dist < 60 && !bird.isFlying) { 
             bird.isDragging = true;
             isMouseDown = true;
         }
@@ -369,11 +390,9 @@
             let mouseX = e.clientX;
             let mouseY = e.clientY;
             
-            // Limitar o puxão
             let dx = mouseX - slingX;
             let dy = mouseY - slingY;
             let dist = Math.sqrt(dx*dx + dy*dy);
-            const MAX_PULL = 100;
             
             if (dist > MAX_PULL) {
                 let angle = Math.atan2(dy, dx);
@@ -391,55 +410,59 @@
             bird.isDragging = false;
             bird.isFlying = true;
             
-            // Calcular velocidade baseada no puxão (Inverso do vetor)
             let dx = slingX - bird.x;
             let dy = slingY - bird.y;
             
-            bird.vx = dx * 0.15; // Força do lançamento
-            bird.vy = dy * 0.15;
+            // MULTIPLICADOR DE FORÇA AUMENTADO (0.15 -> 0.26)
+            bird.vx = dx * 0.26; 
+            bird.vy = dy * 0.26;
         }
         isMouseDown = false;
     });
 
-    // Tecla R para reiniciar
     window.addEventListener('keydown', (e) => {
         if(e.key.toLowerCase() === 'r') resetLevel();
     });
 
     // --- LOOP PRINCIPAL ---
     function loop() {
-        // Limpar tela
         ctx.clearRect(0, 0, width, height);
 
-        // Desenhar Chão
-        ctx.fillStyle = '#7cfc00'; // Grama
+        // Cenário
+        ctx.fillStyle = '#7cfc00'; 
         ctx.fillRect(0, height - GROUND_HEIGHT, width, GROUND_HEIGHT);
-        ctx.fillStyle = '#654321'; // Terra
+        ctx.fillStyle = '#654321'; 
         ctx.fillRect(0, height - GROUND_HEIGHT + 20, width, GROUND_HEIGHT);
 
-        // Desenhar Estilingue (Parte de trás)
+        // Estilingue Traseiro
+        ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(slingX, slingY);
-        ctx.lineTo(slingX - 10, height - GROUND_HEIGHT);
-        ctx.lineTo(slingX + 10, height - GROUND_HEIGHT);
+        ctx.lineTo(slingX - 15, height - GROUND_HEIGHT);
+        ctx.lineTo(slingX + 15, height - GROUND_HEIGHT);
         ctx.fillStyle = '#8B4513';
         ctx.fill();
 
-        // Linha elástica (Se arrastando)
+        // Elástico Traseiro
         if (bird.isDragging) {
             ctx.beginPath();
-            ctx.moveTo(slingX - 10, slingY);
-            ctx.lineTo(bird.x, bird.y);
-            ctx.moveTo(slingX + 10, slingY);
-            ctx.lineTo(bird.x, bird.y);
+            ctx.moveTo(slingX - 15, slingY);
+            ctx.lineTo(bird.x - 10, bird.y);
             ctx.strokeStyle = '#301808';
-            ctx.lineWidth = 5;
             ctx.stroke();
         }
 
-        // Atualizar e Desenhar Entidades
         blocks.forEach(b => b.draw());
         pigs.forEach(p => p.draw());
+
+        // Elástico Dianteiro (passa na frente do pássaro)
+        if (bird.isDragging) {
+            ctx.beginPath();
+            ctx.moveTo(slingX + 15, slingY);
+            ctx.lineTo(bird.x + 10, bird.y);
+            ctx.strokeStyle = '#522915';
+            ctx.stroke();
+        }
 
         bird.update();
         bird.draw();
@@ -447,18 +470,17 @@
         checkCollisions();
         updateUI();
 
-        // Partículas
         for (let i = particles.length - 1; i >= 0; i--) {
             let p = particles[i];
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.2; // Gravidade partículas
-            p.life -= 0.05;
+            p.vy += 0.2; 
+            p.life -= 0.03; 
             
             ctx.globalAlpha = p.life;
             ctx.fillStyle = p.color;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
             ctx.fill();
             ctx.globalAlpha = 1.0;
 
@@ -468,7 +490,6 @@
         requestAnimationFrame(loop);
     }
 
-    // Iniciar
     resetLevel();
     loop();
 
