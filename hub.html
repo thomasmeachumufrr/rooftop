@@ -55,14 +55,36 @@
         
         .main-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .categories { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
-        .cat-btn { background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+        
+        .cat-btn { 
+            background-color: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-secondary); 
+            padding: 8px 18px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            user-select: none; /* Impede seleção de texto ao clicar rápido */
+        }
         .cat-btn:hover, .cat-btn.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
 
         /* Grid */
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
-        .tool-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow); transition: transform 0.2s; position: relative; overflow: hidden; }
-        .tool-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .tool-card { 
+            background-color: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius); 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            box-shadow: var(--shadow); 
+            position: relative; 
+            overflow: hidden; /* Mantém tudo dentro das bordas */
+        }
+        .tool-card:hover { transform: translateY(-5px); border-color: var(--accent-color); transition: transform 0.2s; }
 
         /* Botão de Ajuda (Tutorial) */
         .help-icon-btn {
@@ -71,13 +93,14 @@
             right: 15px;
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 1.2rem;
-            transition: color 0.2s;
-            z-index: 10;
+            font-size: 1.3rem; /* Aumentei um pouco */
+            transition: color 0.2s, transform 0.2s;
+            z-index: 20; /* Garante que fique acima de tudo no card */
+            padding: 5px; /* Aumenta a área de clique */
         }
-        .help-icon-btn:hover { color: var(--accent-color); transform: scale(1.1); }
+        .help-icon-btn:hover { color: var(--accent-color); transform: scale(1.2); }
 
-        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-right: 20px; }
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-right: 25px; }
         .card-icon { width: 45px; height: 45px; background-color: rgba(37, 99, 235, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-size: 1.5rem; }
         .card-title { font-size: 1.1rem; font-weight: 700; }
         .card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; flex-grow: 1; }
@@ -91,7 +114,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: var(--modal-bg);
-            z-index: 1000;
+            z-index: 9999;
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -109,21 +132,28 @@
             max-height: 85vh;
             overflow-y: auto;
             border: 1px solid var(--border-color);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-close {
             position: absolute;
             top: 15px;
             right: 20px;
-            font-size: 1.5rem;
+            font-size: 2rem;
             cursor: pointer;
             color: var(--text-secondary);
+            line-height: 1;
         }
         .modal-close:hover { color: var(--accent-color); }
 
         .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .modal-body { color: var(--text-primary); font-size: 1rem; line-height: 1.7; }
-        .modal-body code { background: var(--bg-color); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--accent-color); border: 1px solid var(--border-color); }
+        .modal-body code { background: var(--bg-color); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--accent-color); border: 1px solid var(--border-color); display: inline-block; }
         .modal-body ul { padding-left: 20px; margin-bottom: 10px; }
         .modal-body li { margin-bottom: 8px; }
 
@@ -133,7 +163,7 @@
 <body>
 
     <header>
-        <div class="logo"><i class="fa-solid fa-radar"></i> Nexus OSINT v3</div>
+        <div class="logo"><i class="fa-solid fa-radar"></i> Nexus OSINT v3.1</div>
         <div class="controls">
             <button class="theme-btn" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
         </div>
@@ -149,18 +179,19 @@
 
     <div class="main-container">
         <div class="categories">
-            <button class="cat-btn active" onclick="filterCategory('all')">Todos</button>
-            <button class="cat-btn" onclick="filterCategory('Framework')">Frameworks</button>
-            <button class="cat-btn" onclick="filterCategory('Username')">Username</button>
-            <button class="cat-btn" onclick="filterCategory('Email')">Email</button>
-            <button class="cat-btn" onclick="filterCategory('Network')">Rede/IoT</button>
-            <button class="cat-btn" onclick="filterCategory('Leaks')">Leaks</button>
-            <button class="cat-btn" onclick="filterCategory('Images')">Imagens/Mapas</button>
+            <button class="cat-btn active" data-filter="all">Todos</button>
+            <button class="cat-btn" data-filter="Framework">Frameworks</button>
+            <button class="cat-btn" data-filter="Username">Username</button>
+            <button class="cat-btn" data-filter="Email">Email</button>
+            <button class="cat-btn" data-filter="Network">Rede/IoT</button>
+            <button class="cat-btn" data-filter="Leaks">Leaks</button>
+            <button class="cat-btn" data-filter="Images">Imagens/Mapas</button>
         </div>
 
         <div class="tools-grid" id="tools-grid">
+            
             <div class="tool-card" data-category="Framework">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-share-nodes"></i></div>
                     <div class="card-title">Maltego</div>
@@ -171,7 +202,7 @@
             </div>
 
             <div class="tool-card" data-category="Framework">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
                     <div class="card-title">SpiderFoot</div>
@@ -182,7 +213,7 @@
             </div>
 
             <div class="tool-card" data-category="Framework">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-terminal"></i></div>
                     <div class="card-title">Recon-ng</div>
@@ -193,7 +224,7 @@
             </div>
 
             <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
                     <div class="card-title">Shodan</div>
@@ -204,7 +235,7 @@
             </div>
 
             <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-wave-square"></i></div>
                     <div class="card-title">GreyNoise</div>
@@ -215,7 +246,7 @@
             </div>
 
             <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
                     <div class="card-title">Amass</div>
@@ -226,7 +257,7 @@
             </div>
 
              <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-network-wired"></i></div>
                     <div class="card-title">DNS Dumpster</div>
@@ -237,7 +268,7 @@
             </div>
 
             <div class="tool-card" data-category="Network">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                     <div class="card-title">Wayback Machine</div>
@@ -246,9 +277,20 @@
                 <p class="card-desc">Versões antigas de sites e páginas deletadas.</p>
                 <a href="https://archive.org/web/" target="_blank" class="card-btn">Acessar</a>
             </div>
+            
+            <div class="tool-card" data-category="Network">
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-eye"></i></div>
+                    <div class="card-title">ZoomEye</div>
+                </div>
+                <span class="card-tag">IoT / Scanner</span>
+                <p class="card-desc">Motor de busca do ciberespaço que registra hosts e componentes web.</p>
+                <a href="https://www.zoomeye.org" target="_blank" class="card-btn">Acessar</a>
+            </div>
 
             <div class="tool-card" data-category="Username">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-user-secret"></i></div>
                     <div class="card-title">Sherlock</div>
@@ -259,7 +301,7 @@
             </div>
 
             <div class="tool-card" data-category="Username">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-address-card"></i></div>
                     <div class="card-title">WhatsMyName</div>
@@ -269,8 +311,19 @@
                 <a href="https://whatsmyname.app" target="_blank" class="card-btn">Acessar</a>
             </div>
 
+            <div class="tool-card" data-category="Username">
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-id-card"></i></div>
+                    <div class="card-title">Namechk</div>
+                </div>
+                <span class="card-tag">Username</span>
+                <p class="card-desc">Verifique a disponibilidade de nomes de usuários e domínios.</p>
+                <a href="https://namechk.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
             <div class="tool-card" data-category="Email">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-at"></i></div>
                     <div class="card-title">Hunter.io</div>
@@ -281,7 +334,7 @@
             </div>
 
             <div class="tool-card" data-category="Email">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
                     <div class="card-title">theHarvester</div>
@@ -292,7 +345,7 @@
             </div>
 
             <div class="tool-card" data-category="Email">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
                     <div class="card-title">Epieos</div>
@@ -303,7 +356,7 @@
             </div>
 
             <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-database"></i></div>
                     <div class="card-title">Intelligence X</div>
@@ -314,7 +367,7 @@
             </div>
 
             <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-shield-cat"></i></div>
                     <div class="card-title">Have I Been Pwned</div>
@@ -325,7 +378,7 @@
             </div>
 
              <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-brands fa-google"></i></div>
                     <div class="card-title">Google Dorks DB</div>
@@ -336,7 +389,7 @@
             </div>
 
              <div class="tool-card" data-category="Leaks">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
                     <div class="card-title">DeHashed</div>
@@ -347,7 +400,7 @@
             </div>
 
             <div class="tool-card" data-category="Images">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-image"></i></div>
                     <div class="card-title">Yandex Images</div>
@@ -358,7 +411,7 @@
             </div>
 
             <div class="tool-card" data-category="Images">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-camera-rotate"></i></div>
                     <div class="card-title">TinEye</div>
@@ -368,7 +421,7 @@
                 <a href="https://tineye.com/" target="_blank" class="card-btn">Acessar</a>
             </div>
              <div class="tool-card" data-category="Images">
-                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <i class="fa-regular fa-circle-question help-icon-btn" title="Ver Tutorial"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-earth-americas"></i></div>
                     <div class="card-title">Google Earth Pro</div>
@@ -395,6 +448,7 @@
     </div>
 
     <script>
+    document.addEventListener('DOMContentLoaded', () => {
         // --- BASE DE DADOS DE TUTORIAIS ---
         const tutorials = {
             "Maltego": "<p><strong>O que é:</strong> Cria gráficos de relacionamentos entre dados.</p><ul><li>Use 'Transforms' para expandir dados (Ex: Email -> Redes Sociais).</li><li>Requer cadastro e instalação do cliente Java.</li><li>A versão CE (Community) é gratuita mas limitada.</li></ul>",
@@ -417,33 +471,83 @@
             "Yandex Images": "<p><strong>O que é:</strong> Reconhecimento facial russo.</p><ul><li>Suba a foto de um rosto (mesmo recortada).</li><li>O algoritmo é mais agressivo que o do Google, achando perfis em redes sociais menores.</li></ul>",
             "TinEye": "<p><strong>O que é:</strong> Rastreio de origem.</p><ul><li>Ideal para saber se uma foto de perfil é fake (roubada de banco de imagens).</li><li>Permite filtrar por data ('Oldest') para achar a primeira vez que a foto apareceu.</li></ul>",
             "Google Earth Pro": "<p><strong>O que é:</strong> Geo-inteligência.</p><ul><li>Baixe a versão Desktop Pro.</li><li>Use o ícone de 'Relógio' no menu superior para ver imagens de satélite antigas da mesma região.</li></ul>",
-            "ZoomEye": "<p><strong>O que é:</strong> Alternativa chinesa ao Shodan.</p><ul><li>Muitas vezes acha dispositivos na Ásia que o Shodan perde.</li><li>Usa dorks próprias como <code>app:"Apache" +country:"CN"</code>.</li></ul>",
+            "ZoomEye": "<p><strong>O que é:</strong> Alternativa chinesa ao Shodan.</p><ul><li>Muitas vezes acha dispositivos na Ásia que o Shodan perde.</li><li>Usa dorks próprias como <code>app:\"Apache\" +country:\"CN\"</code>.</li></ul>",
             "Namechk": "<p><strong>O que é:</strong> Disponibilidade de marca.</p><ul><li>Verifica se o user está livre. Se estiver 'Ocupado' em tudo, é provável que seja uma pessoa famosa ou marca ativa.</li></ul>"
         };
 
-        // --- LÓGICA DO MODAL ---
+        // --- REFERÊNCIAS ---
         const modal = document.getElementById('tutorial-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalBody = document.getElementById('modal-body');
         const closeModal = document.getElementById('close-modal');
+        const searchInput = document.getElementById('search-input');
+        const cards = document.querySelectorAll('.tool-card');
+        const catButtons = document.querySelectorAll('.cat-btn');
 
-        // Adicionar evento a todos os ícones de ajuda
-        document.querySelectorAll('.help-icon-btn').forEach(btn => {
+        // --- 1. LÓGICA DE FILTROS (CATEGORIAS) ---
+        catButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remover classe 'active' de todos
+                catButtons.forEach(b => b.classList.remove('active'));
+                // Adicionar ao clicado
+                btn.classList.add('active');
+                
+                const category = btn.getAttribute('data-filter');
+                
+                cards.forEach(card => {
+                    const cardCat = card.getAttribute('data-category');
+                    if (category === 'all' || cardCat === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Limpar busca ao clicar em categoria
+                searchInput.value = '';
+            });
+        });
+
+        // --- 2. LÓGICA DE BUSCA ---
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            // Remove seleção de categoria ao buscar
+            catButtons.forEach(b => b.classList.remove('active'));
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+                const tag = card.querySelector('.card-tag').textContent.toLowerCase();
+                
+                if (title.includes(term) || desc.includes(term) || tag.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // --- 3. LÓGICA DO MODAL (AJUDA) ---
+        const helpButtons = document.querySelectorAll('.help-icon-btn');
+
+        helpButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evita clicar no card
+                e.stopPropagation(); // Impede que o clique "vaze" para o card
+                e.preventDefault();  // Previne comportamento padrão
+                
                 const card = btn.closest('.tool-card');
                 const title = card.querySelector('.card-title').textContent.trim();
                 
-                // Carregar conteúdo
                 if (tutorials[title]) {
                     modalTitle.textContent = title;
                     modalBody.innerHTML = tutorials[title];
-                    modal.style.display = 'flex';
                 } else {
                     modalTitle.textContent = title;
-                    modalBody.innerHTML = "<p>Tutorial em breve.</p>";
-                    modal.style.display = 'flex';
+                    modalBody.innerHTML = "<p>Tutorial em desenvolvimento.</p>";
                 }
+                
+                modal.style.display = 'flex';
             });
         });
 
@@ -452,13 +556,14 @@
             modal.style.display = 'none';
         });
 
+        // Fechar clicando fora
         window.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.style.display = 'none';
             }
         });
 
-        // --- LÓGICA DARK MODE ---
+        // --- 4. DARK MODE ---
         const themeBtn = document.getElementById('theme-toggle');
         const icon = themeBtn.querySelector('i');
         
@@ -478,38 +583,7 @@
                 localStorage.setItem('theme', 'light');
             }
         });
-
-        // --- LÓGICA BUSCA E FILTROS ---
-        const searchInput = document.getElementById('search-input');
-        const cards = document.querySelectorAll('.tool-card');
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const title = card.querySelector('.card-title').textContent.toLowerCase();
-                const desc = card.querySelector('.card-desc').textContent.toLowerCase();
-                const tag = card.querySelector('.card-tag').textContent.toLowerCase();
-                if (title.includes(term) || desc.includes(term) || tag.includes(term)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-
-        function filterCategory(category) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            cards.forEach(card => {
-                const cardCat = card.getAttribute('data-category');
-                if (category === 'all' || cardCat === category) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            searchInput.value = '';
-        }
+    });
     </script>
 </body>
 </html>
