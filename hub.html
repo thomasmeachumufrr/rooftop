@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus OSINT Hub</title>
+    <title>Nexus OSINT Hub - Full Arsenal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
@@ -249,7 +249,6 @@
             background-color: var(--accent-hover);
         }
 
-        /* Footer */
         footer {
             text-align: center;
             margin-top: 50px;
@@ -262,7 +261,7 @@
 
     <header>
         <div class="logo">
-            <i class="fa-solid fa-network-wired"></i> Nexus OSINT
+            <i class="fa-solid fa-radar"></i> Nexus OSINT v2
         </div>
         <div class="controls">
             <button class="theme-btn" id="theme-toggle" aria-label="Alternar Tema">
@@ -272,34 +271,134 @@
     </header>
 
     <div class="search-container">
-        <h1 style="margin-bottom: 15px; font-weight: 300;">Ferramentas de Inteligência</h1>
+        <h1 style="margin-bottom: 15px; font-weight: 300;">Arsenal de Inteligência</h1>
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar ferramenta (ex: Username, IP, Email...)">
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar ferramenta (ex: Shodan, Email, IP, Maps...)">
         </div>
     </div>
 
     <div class="main-container">
         <div class="categories">
             <button class="cat-btn active" onclick="filterCategory('all')">Todos</button>
+            <button class="cat-btn" onclick="filterCategory('Framework')">Frameworks</button>
             <button class="cat-btn" onclick="filterCategory('Username')">Username</button>
             <button class="cat-btn" onclick="filterCategory('Email')">Email</button>
-            <button class="cat-btn" onclick="filterCategory('Domain')">Domínio/IP</button>
-            <button class="cat-btn" onclick="filterCategory('Social')">Social Media</button>
-            <button class="cat-btn" onclick="filterCategory('Images')">Imagens</button>
-            <button class="cat-btn" onclick="filterCategory('Maps')">Mapas</button>
+            <button class="cat-btn" onclick="filterCategory('Network')">Rede/IoT/Domínio</button>
+            <button class="cat-btn" onclick="filterCategory('Leaks')">Leaks/Dados</button>
+            <button class="cat-btn" onclick="filterCategory('Images')">Imagens/Mapas</button>
         </div>
 
         <div class="tools-grid" id="tools-grid">
             
+            <div class="tool-card" data-category="Framework">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-share-nodes"></i></div>
+                    <div class="card-title">Maltego</div>
+                </div>
+                <span class="card-tag">Framework</span>
+                <p class="card-desc">Ferramenta gráfica para análise de links e mineração de dados em tempo real.</p>
+                <a href="https://www.maltego.com" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Framework">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
+                    <div class="card-title">SpiderFoot</div>
+                </div>
+                <span class="card-tag">Framework</span>
+                <p class="card-desc">Ferramenta de automação OSINT para varredura de centenas de fontes de dados.</p>
+                <a href="https://www.spiderfoot.net" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Framework">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-terminal"></i></div>
+                    <div class="card-title">Recon-ng</div>
+                </div>
+                <span class="card-tag">Framework</span>
+                <p class="card-desc">Framework de reconhecimento web completo escrito em Python.</p>
+                <a href="https://github.com/lanmaster53/recon-ng" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Network">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
+                    <div class="card-title">Shodan</div>
+                </div>
+                <span class="card-tag">IoT / Scanner</span>
+                <p class="card-desc">O "Google" dos dispositivos conectados à internet. Busca servidores, câmeras, etc.</p>
+                <a href="https://www.shodan.io" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Network">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-wave-square"></i></div>
+                    <div class="card-title">GreyNoise</div>
+                </div>
+                <span class="card-tag">Scanner</span>
+                <p class="card-desc">Analisa e rotula IPs que escaneiam a internet e filtram ruído de fundo.</p>
+                <a href="https://www.greynoise.io" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Network">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-eye"></i></div>
+                    <div class="card-title">ZoomEye</div>
+                </div>
+                <span class="card-tag">IoT / Scanner</span>
+                <p class="card-desc">Motor de busca do ciberespaço que registra hosts e componentes web.</p>
+                <a href="https://www.zoomeye.org" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Network">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
+                    <div class="card-title">Amass</div>
+                </div>
+                <span class="card-tag">Domínio / DNS</span>
+                <p class="card-desc">Mapeamento de rede e enumeração de ativos externos (DNS, subdomínios).</p>
+                <a href="https://github.com/owasp-amass/amass" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Network">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="card-title">DNS Dumpster</div>
+                </div>
+                <span class="card-tag">Domínio</span>
+                <p class="card-desc">Pesquisa de domínio gratuita para encontrar registros DNS e subdomínios.</p>
+                <a href="https://dnsdumpster.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Network">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="card-title">Wayback Machine</div>
+                </div>
+                <span class="card-tag">Arquivo</span>
+                <p class="card-desc">Veja versões antigas de sites e páginas que já foram deletadas.</p>
+                <a href="https://archive.org/web/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
             <div class="tool-card" data-category="Username">
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-user-secret"></i></div>
                     <div class="card-title">Sherlock</div>
                 </div>
                 <span class="card-tag">Username</span>
-                <p class="card-desc">Procure por nomes de usuários em centenas de redes sociais automaticamente.</p>
+                <p class="card-desc">Procure por nomes de usuários em centenas de redes sociais via linha de comando.</p>
                 <a href="https://github.com/sherlock-project/sherlock" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Username">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-address-card"></i></div>
+                    <div class="card-title">WhatsMyName</div>
+                </div>
+                <span class="card-tag">Username</span>
+                <p class="card-desc">Ferramenta rápida e eficaz para checar usernames em diversos sites.</p>
+                <a href="https://whatsmyname.app" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Username">
@@ -308,48 +407,8 @@
                     <div class="card-title">Namechk</div>
                 </div>
                 <span class="card-tag">Username</span>
-                <p class="card-desc">Verifique a disponibilidade de nomes de usuários e domínios em várias plataformas.</p>
+                <p class="card-desc">Verifique a disponibilidade de nomes de usuários e domínios.</p>
                 <a href="https://namechk.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Domain">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
-                    <div class="card-title">Shodan</div>
-                </div>
-                <span class="card-tag">Domain / IoT</span>
-                <p class="card-desc">O mecanismo de busca para dispositivos conectados à Internet (IoT, Servidores).</p>
-                <a href="https://www.shodan.io/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Email">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
-                    <div class="card-title">Have I Been Pwned</div>
-                </div>
-                <span class="card-tag">Email</span>
-                <p class="card-desc">Verifique se um email ou senha foi comprometido em vazamentos de dados.</p>
-                <a href="https://haveibeenpwned.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-             <div class="tool-card" data-category="Domain">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <div class="card-title">Wayback Machine</div>
-                </div>
-                <span class="card-tag">Domain</span>
-                <p class="card-desc">Veja versões antigas de sites e páginas que já foram deletadas.</p>
-                <a href="https://archive.org/web/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Images">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-image"></i></div>
-                    <div class="card-title">TinEye</div>
-                </div>
-                <span class="card-tag">Images</span>
-                <p class="card-desc">Busca reversa de imagens para descobrir onde uma foto foi usada na web.</p>
-                <a href="https://tineye.com/" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Email">
@@ -358,45 +417,105 @@
                     <div class="card-title">Hunter.io</div>
                 </div>
                 <span class="card-tag">Email</span>
-                <p class="card-desc">Encontre endereços de email profissionais associados a um domínio específico.</p>
-                <a href="https://hunter.io/" target="_blank" class="card-btn">Acessar</a>
+                <p class="card-desc">Encontre endereços de email profissionais associados a um domínio.</p>
+                <a href="https://hunter.io" target="_blank" class="card-btn">Acessar</a>
             </div>
 
-            <div class="tool-card" data-category="Domain">
+            <div class="tool-card" data-category="Email">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
-                    <div class="card-title">DNS Dumpster</div>
+                    <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+                    <div class="card-title">theHarvester</div>
                 </div>
-                <span class="card-tag">Domain</span>
-                <p class="card-desc">Ferramenta gratuita de pesquisa de domínio para encontrar registros DNS e subdomínios.</p>
-                <a href="https://dnsdumpster.com/" target="_blank" class="card-btn">Acessar</a>
+                <span class="card-tag">Email / Domínio</span>
+                <p class="card-desc">Coleta e-mails, subdomínios, hosts, nomes de funcionários e portas abertas.</p>
+                <a href="https://github.com/laramies/theHarvester" target="_blank" class="card-btn">Acessar</a>
             </div>
 
-            <div class="tool-card" data-category="Maps">
+            <div class="tool-card" data-category="Email">
                 <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="card-icon"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
+                    <div class="card-title">Epieos</div>
+                </div>
+                <span class="card-tag">Email / Telefone</span>
+                <p class="card-desc">Investigue e-mails e telefones sem alertar o alvo (Google, Skype, etc).</p>
+                <a href="https://epieos.com" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Leaks">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-database"></i></div>
+                    <div class="card-title">Intelligence X</div>
+                </div>
+                <span class="card-tag">Data Leak</span>
+                <p class="card-desc">Motor de busca e arquivo que preserva dados históricos e vazamentos.</p>
+                <a href="https://intelx.io" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Leaks">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
+                    <div class="card-title">DeHashed</div>
+                </div>
+                <span class="card-tag">Data Breach</span>
+                <p class="card-desc">Pesquisa em bancos de dados de vazamentos para credenciais comprometidas.</p>
+                <a href="https://www.dehashed.com" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Leaks">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-shield-cat"></i></div>
+                    <div class="card-title">Have I Been Pwned</div>
+                </div>
+                <span class="card-tag">Data Breach</span>
+                <p class="card-desc">Verifique se seu email ou senha vazou em grandes brechas de segurança.</p>
+                <a href="https://haveibeenpwned.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Leaks">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-brands fa-google"></i></div>
+                    <div class="card-title">Google Dorks DB</div>
+                </div>
+                <span class="card-tag">Search</span>
+                <p class="card-desc">Banco de dados de "Dorks" para encontrar arquivos sensíveis via Google.</p>
+                <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Images">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-image"></i></div>
+                    <div class="card-title">Yandex Images</div>
+                </div>
+                <span class="card-tag">Imagens</span>
+                <p class="card-desc">Um dos melhores motores para reconhecimento facial e busca reversa de imagem.</p>
+                <a href="https://yandex.com/images/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Images">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-camera-rotate"></i></div>
+                    <div class="card-title">TinEye</div>
+                </div>
+                <span class="card-tag">Imagens</span>
+                <p class="card-desc">Busca reversa de imagens dedicada para rastrear onde aparecem.</p>
+                <a href="https://tineye.com/" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
+            <div class="tool-card" data-category="Images">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-earth-americas"></i></div>
                     <div class="card-title">Google Earth Pro</div>
                 </div>
-                <span class="card-tag">Maps</span>
-                <p class="card-desc">Visualização de satélite detalhada e ferramentas históricas de imagens.</p>
+                <span class="card-tag">Mapas</span>
+                <p class="card-desc">Visualização de satélite detalhada e imagens históricas.</p>
                 <a href="https://www.google.com/earth/versions/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-             <div class="tool-card" data-category="Social">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-brands fa-twitter"></i></div>
-                    <div class="card-title">TweetDeck</div>
-                </div>
-                <span class="card-tag">Social</span>
-                <p class="card-desc">Monitoramento em tempo real de múltiplas timelines e listas do Twitter (X).</p>
-                <a href="https://tweetdeck.twitter.com/" target="_blank" class="card-btn">Acessar</a>
             </div>
             
         </div>
     </div>
 
     <footer>
-        <p>Nexus OSINT Hub &copy; 2024. Use com responsabilidade e ética.</p>
+        <p>Nexus OSINT Arsenal &copy; 2024. Ferramentas consolidadas para pesquisa.</p>
     </footer>
 
     <script>
@@ -404,7 +523,6 @@
         const themeBtn = document.getElementById('theme-toggle');
         const icon = themeBtn.querySelector('i');
         
-        // Checar preferência salva
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
             icon.classList.replace('fa-moon', 'fa-sun');
@@ -414,7 +532,6 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             
-            // Trocar ícone
             if (isDark) {
                 icon.classList.replace('fa-moon', 'fa-sun');
                 localStorage.setItem('theme', 'dark');
@@ -446,11 +563,9 @@
 
         // --- Lógica de Categorias ---
         function filterCategory(category) {
-            // Atualizar botões
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
 
-            // Filtrar cards
             cards.forEach(card => {
                 const cardCat = card.getAttribute('data-category');
                 if (category === 'all' || cardCat === category) {
@@ -459,8 +574,6 @@
                     card.style.display = 'none';
                 }
             });
-            
-            // Limpar busca ao clicar em categoria
             searchInput.value = '';
         }
     </script>
