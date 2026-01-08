@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus OSINT Hub - Full Arsenal</title>
+    <title>Nexus OSINT Hub - Edu Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Variáveis Modo Claro (Padrão) */
             --bg-color: #f3f4f6;
             --header-bg: #ffffff;
             --card-bg: #ffffff;
             --text-primary: #1f2937;
             --text-secondary: #6b7280;
-            --accent-color: #2563eb; /* Azul Royal */
+            --accent-color: #2563eb;
             --accent-hover: #1d4ed8;
             --border-color: #e5e7eb;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --radius: 12px;
+            --modal-bg: rgba(0, 0, 0, 0.6);
+            --modal-content-bg: #ffffff;
         }
 
         .dark-mode {
-            /* Variáveis Modo Escuro */
             --bg-color: #0f172a;
             --header-bg: #1e293b;
             --card-bg: #1e293b;
@@ -33,240 +33,109 @@
             --accent-hover: #60a5fa;
             --border-color: #334155;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --modal-content-bg: #1e293b;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding-bottom: 50px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-primary); line-height: 1.6; padding-bottom: 50px; }
 
         /* Header */
-        header {
-            background-color: var(--header-bg);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-        }
+        header { background-color: var(--header-bg); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); display: flex; align-items: center; gap: 10px; }
+        .theme-btn { background: none; border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+        .theme-btn:hover { background-color: var(--bg-color); color: var(--accent-color); }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* Busca e Filtros */
+        .search-container { max-width: 800px; margin: 40px auto 20px auto; padding: 0 20px; text-align: center; }
+        .search-box { position: relative; width: 100%; }
+        .search-input { width: 100%; padding: 15px 20px 15px 50px; font-size: 1.1rem; border: 2px solid var(--border-color); border-radius: 50px; background-color: var(--card-bg); color: var(--text-primary); outline: none; box-shadow: var(--shadow); }
+        .search-input:focus { border-color: var(--accent-color); }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+        
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .categories { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+        .cat-btn { background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+        .cat-btn:hover, .cat-btn.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
 
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        /* Grid */
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
+        .tool-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow); transition: transform 0.2s; position: relative; overflow: hidden; }
+        .tool-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
 
-        /* Botão Toggle Theme */
-        .theme-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 8px;
+        /* Botão de Ajuda (Tutorial) */
+        .help-icon-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 1.2rem;
+            transition: color 0.2s;
+            z-index: 10;
         }
-        .theme-btn:hover {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-        }
+        .help-icon-btn:hover { color: var(--accent-color); transform: scale(1.1); }
 
-        /* Barra de Busca */
-        .search-container {
-            max-width: 800px;
-            margin: 40px auto 20px auto;
-            padding: 0 20px;
-            text-align: center;
-        }
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-right: 20px; }
+        .card-icon { width: 45px; height: 45px; background-color: rgba(37, 99, 235, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-size: 1.5rem; }
+        .card-title { font-size: 1.1rem; font-weight: 700; }
+        .card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; flex-grow: 1; }
+        .card-tag { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); background-color: var(--bg-color); padding: 4px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 15px; }
+        .card-btn { text-decoration: none; background-color: var(--accent-color); color: white; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600; transition: background 0.2s; }
+        .card-btn:hover { background-color: var(--accent-hover); }
 
-        .search-box {
-            position: relative;
-            width: 100%;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 15px 20px 15px 50px;
-            font-size: 1.1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            outline: none;
-            box-shadow: var(--shadow);
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-color);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        /* Container Principal */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* MODAL (Tutorial) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-bg);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            backdrop-filter: blur(5px);
         }
 
-        /* Categorias (Tags) */
-        .categories {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .cat-btn {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 6px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .cat-btn:hover, .cat-btn.active {
-            background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-
-        /* Grid de Ferramentas */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .tool-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+        .modal-content {
+            background: var(--modal-content-bg);
+            padding: 30px;
             border-radius: var(--radius);
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, box-shadow 0.2s;
+            max-width: 600px;
+            width: 100%;
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
         }
 
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-color: var(--accent-color);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .card-icon {
-            width: 45px;
-            height: 45px;
-            background-color: rgba(37, 99, 235, 0.1); /* Accent com opacidade */
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-color);
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
             font-size: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .card-desc {
-            font-size: 0.9rem;
+            cursor: pointer;
             color: var(--text-secondary);
-            margin-bottom: 20px;
-            flex-grow: 1;
         }
+        .modal-close:hover { color: var(--accent-color); }
 
-        .card-tag {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-            background-color: var(--bg-color);
-            padding: 4px 8px;
-            border-radius: 4px;
-            align-self: flex-start;
-            margin-bottom: 15px;
-        }
+        .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .modal-body { color: var(--text-primary); font-size: 1rem; line-height: 1.7; }
+        .modal-body code { background: var(--bg-color); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--accent-color); border: 1px solid var(--border-color); }
+        .modal-body ul { padding-left: 20px; margin-bottom: 10px; }
+        .modal-body li { margin-bottom: 8px; }
 
-        .card-btn {
-            text-decoration: none;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        .card-btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
+        footer { text-align: center; margin-top: 50px; color: var(--text-secondary); font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">
-            <i class="fa-solid fa-radar"></i> Nexus OSINT v2
-        </div>
+        <div class="logo"><i class="fa-solid fa-radar"></i> Nexus OSINT v3</div>
         <div class="controls">
-            <button class="theme-btn" id="theme-toggle" aria-label="Alternar Tema">
-                <i class="fa-solid fa-moon"></i>
-            </button>
+            <button class="theme-btn" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
         </div>
     </header>
 
@@ -274,7 +143,7 @@
         <h1 style="margin-bottom: 15px; font-weight: 300;">Arsenal de Inteligência</h1>
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="search-input" class="search-input" placeholder="Buscar ferramenta (ex: Shodan, Email, IP, Maps...)">
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar ferramenta...">
         </div>
     </div>
 
@@ -284,14 +153,14 @@
             <button class="cat-btn" onclick="filterCategory('Framework')">Frameworks</button>
             <button class="cat-btn" onclick="filterCategory('Username')">Username</button>
             <button class="cat-btn" onclick="filterCategory('Email')">Email</button>
-            <button class="cat-btn" onclick="filterCategory('Network')">Rede/IoT/Domínio</button>
-            <button class="cat-btn" onclick="filterCategory('Leaks')">Leaks/Dados</button>
+            <button class="cat-btn" onclick="filterCategory('Network')">Rede/IoT</button>
+            <button class="cat-btn" onclick="filterCategory('Leaks')">Leaks</button>
             <button class="cat-btn" onclick="filterCategory('Images')">Imagens/Mapas</button>
         </div>
 
         <div class="tools-grid" id="tools-grid">
-            
             <div class="tool-card" data-category="Framework">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-share-nodes"></i></div>
                     <div class="card-title">Maltego</div>
@@ -302,224 +171,294 @@
             </div>
 
             <div class="tool-card" data-category="Framework">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
                     <div class="card-title">SpiderFoot</div>
                 </div>
                 <span class="card-tag">Framework</span>
-                <p class="card-desc">Ferramenta de automação OSINT para varredura de centenas de fontes de dados.</p>
+                <p class="card-desc">Automação OSINT para varredura de centenas de fontes de dados.</p>
                 <a href="https://www.spiderfoot.net" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Framework">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-terminal"></i></div>
                     <div class="card-title">Recon-ng</div>
                 </div>
                 <span class="card-tag">Framework</span>
-                <p class="card-desc">Framework de reconhecimento web completo escrito em Python.</p>
+                <p class="card-desc">Framework modular de reconhecimento web escrito em Python.</p>
                 <a href="https://github.com/lanmaster53/recon-ng" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Network">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-globe"></i></div>
                     <div class="card-title">Shodan</div>
                 </div>
                 <span class="card-tag">IoT / Scanner</span>
-                <p class="card-desc">O "Google" dos dispositivos conectados à internet. Busca servidores, câmeras, etc.</p>
+                <p class="card-desc">O "Google" dos dispositivos conectados (câmeras, servidores, SCADA).</p>
                 <a href="https://www.shodan.io" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Network">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-wave-square"></i></div>
                     <div class="card-title">GreyNoise</div>
                 </div>
                 <span class="card-tag">Scanner</span>
-                <p class="card-desc">Analisa e rotula IPs que escaneiam a internet e filtram ruído de fundo.</p>
+                <p class="card-desc">Analisa e rotula IPs que escaneiam a internet e filtram ruído.</p>
                 <a href="https://www.greynoise.io" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Network">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-eye"></i></div>
-                    <div class="card-title">ZoomEye</div>
-                </div>
-                <span class="card-tag">IoT / Scanner</span>
-                <p class="card-desc">Motor de busca do ciberespaço que registra hosts e componentes web.</p>
-                <a href="https://www.zoomeye.org" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Network">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
                     <div class="card-title">Amass</div>
                 </div>
                 <span class="card-tag">Domínio / DNS</span>
-                <p class="card-desc">Mapeamento de rede e enumeração de ativos externos (DNS, subdomínios).</p>
+                <p class="card-desc">Mapeamento de rede e enumeração profunda de subdomínios.</p>
                 <a href="https://github.com/owasp-amass/amass" target="_blank" class="card-btn">Acessar</a>
             </div>
 
-            <div class="tool-card" data-category="Network">
+             <div class="tool-card" data-category="Network">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-network-wired"></i></div>
                     <div class="card-title">DNS Dumpster</div>
                 </div>
                 <span class="card-tag">Domínio</span>
-                <p class="card-desc">Pesquisa de domínio gratuita para encontrar registros DNS e subdomínios.</p>
+                <p class="card-desc">Pesquisa de domínio gratuita para encontrar registros DNS e mapas.</p>
                 <a href="https://dnsdumpster.com/" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Network">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                     <div class="card-title">Wayback Machine</div>
                 </div>
                 <span class="card-tag">Arquivo</span>
-                <p class="card-desc">Veja versões antigas de sites e páginas que já foram deletadas.</p>
+                <p class="card-desc">Versões antigas de sites e páginas deletadas.</p>
                 <a href="https://archive.org/web/" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Username">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-user-secret"></i></div>
                     <div class="card-title">Sherlock</div>
                 </div>
                 <span class="card-tag">Username</span>
-                <p class="card-desc">Procure por nomes de usuários em centenas de redes sociais via linha de comando.</p>
+                <p class="card-desc">Script Python para achar usernames em redes sociais via terminal.</p>
                 <a href="https://github.com/sherlock-project/sherlock" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Username">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-address-card"></i></div>
                     <div class="card-title">WhatsMyName</div>
                 </div>
                 <span class="card-tag">Username</span>
-                <p class="card-desc">Ferramenta rápida e eficaz para checar usernames em diversos sites.</p>
+                <p class="card-desc">Checagem rápida de usernames em diversos sites.</p>
                 <a href="https://whatsmyname.app" target="_blank" class="card-btn">Acessar</a>
             </div>
 
-            <div class="tool-card" data-category="Username">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-id-card"></i></div>
-                    <div class="card-title">Namechk</div>
-                </div>
-                <span class="card-tag">Username</span>
-                <p class="card-desc">Verifique a disponibilidade de nomes de usuários e domínios.</p>
-                <a href="https://namechk.com/" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
             <div class="tool-card" data-category="Email">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-at"></i></div>
                     <div class="card-title">Hunter.io</div>
                 </div>
                 <span class="card-tag">Email</span>
-                <p class="card-desc">Encontre endereços de email profissionais associados a um domínio.</p>
+                <p class="card-desc">Encontre emails profissionais de uma empresa específica.</p>
                 <a href="https://hunter.io" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Email">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
                     <div class="card-title">theHarvester</div>
                 </div>
                 <span class="card-tag">Email / Domínio</span>
-                <p class="card-desc">Coleta e-mails, subdomínios, hosts, nomes de funcionários e portas abertas.</p>
+                <p class="card-desc">Coleta e-mails, subdomínios, hosts e portas.</p>
                 <a href="https://github.com/laramies/theHarvester" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Email">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
                     <div class="card-title">Epieos</div>
                 </div>
                 <span class="card-tag">Email / Telefone</span>
-                <p class="card-desc">Investigue e-mails e telefones sem alertar o alvo (Google, Skype, etc).</p>
+                <p class="card-desc">Investigue e-mails e telefones sem alertar o alvo.</p>
                 <a href="https://epieos.com" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Leaks">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-database"></i></div>
                     <div class="card-title">Intelligence X</div>
                 </div>
                 <span class="card-tag">Data Leak</span>
-                <p class="card-desc">Motor de busca e arquivo que preserva dados históricos e vazamentos.</p>
+                <p class="card-desc">Arquivo de dados históricos e vazamentos, busca na Darknet.</p>
                 <a href="https://intelx.io" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Leaks">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
-                    <div class="card-title">DeHashed</div>
-                </div>
-                <span class="card-tag">Data Breach</span>
-                <p class="card-desc">Pesquisa em bancos de dados de vazamentos para credenciais comprometidas.</p>
-                <a href="https://www.dehashed.com" target="_blank" class="card-btn">Acessar</a>
-            </div>
-
-            <div class="tool-card" data-category="Leaks">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-shield-cat"></i></div>
                     <div class="card-title">Have I Been Pwned</div>
                 </div>
                 <span class="card-tag">Data Breach</span>
-                <p class="card-desc">Verifique se seu email ou senha vazou em grandes brechas de segurança.</p>
+                <p class="card-desc">Verifique se seu email vazou em brechas de segurança.</p>
                 <a href="https://haveibeenpwned.com/" target="_blank" class="card-btn">Acessar</a>
             </div>
 
-            <div class="tool-card" data-category="Leaks">
+             <div class="tool-card" data-category="Leaks">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-brands fa-google"></i></div>
                     <div class="card-title">Google Dorks DB</div>
                 </div>
                 <span class="card-tag">Search</span>
-                <p class="card-desc">Banco de dados de "Dorks" para encontrar arquivos sensíveis via Google.</p>
+                <p class="card-desc">Banco de dados para encontrar arquivos sensíveis via Google.</p>
                 <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" class="card-btn">Acessar</a>
             </div>
 
+             <div class="tool-card" data-category="Leaks">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
+                    <div class="card-title">DeHashed</div>
+                </div>
+                <span class="card-tag">Data Breach</span>
+                <p class="card-desc">Pesquisa avançada em bancos de dados de vazamentos.</p>
+                <a href="https://www.dehashed.com" target="_blank" class="card-btn">Acessar</a>
+            </div>
+
             <div class="tool-card" data-category="Images">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-image"></i></div>
                     <div class="card-title">Yandex Images</div>
                 </div>
                 <span class="card-tag">Imagens</span>
-                <p class="card-desc">Um dos melhores motores para reconhecimento facial e busca reversa de imagem.</p>
+                <p class="card-desc">Melhor motor para reconhecimento facial e busca reversa.</p>
                 <a href="https://yandex.com/images/" target="_blank" class="card-btn">Acessar</a>
             </div>
 
             <div class="tool-card" data-category="Images">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-camera-rotate"></i></div>
                     <div class="card-title">TinEye</div>
                 </div>
                 <span class="card-tag">Imagens</span>
-                <p class="card-desc">Busca reversa de imagens dedicada para rastrear onde aparecem.</p>
+                <p class="card-desc">Busca reversa para descobrir a origem de uma imagem.</p>
                 <a href="https://tineye.com/" target="_blank" class="card-btn">Acessar</a>
             </div>
-
-            <div class="tool-card" data-category="Images">
+             <div class="tool-card" data-category="Images">
+                <i class="fa-regular fa-circle-question help-icon-btn"></i>
                 <div class="card-header">
                     <div class="card-icon"><i class="fa-solid fa-earth-americas"></i></div>
                     <div class="card-title">Google Earth Pro</div>
                 </div>
                 <span class="card-tag">Mapas</span>
-                <p class="card-desc">Visualização de satélite detalhada e imagens históricas.</p>
+                <p class="card-desc">Satélite detalhado e imagens históricas (Timeline).</p>
                 <a href="https://www.google.com/earth/versions/" target="_blank" class="card-btn">Acessar</a>
             </div>
-            
+
         </div>
     </div>
 
     <footer>
-        <p>Nexus OSINT Arsenal &copy; 2024. Ferramentas consolidadas para pesquisa.</p>
+        <p>Nexus OSINT Arsenal &copy; 2024</p>
     </footer>
 
+    <div class="modal-overlay" id="tutorial-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="close-modal">&times;</span>
+            <div class="modal-title" id="modal-title">Título</div>
+            <div class="modal-body" id="modal-body">
+                </div>
+        </div>
+    </div>
+
     <script>
-        // --- Lógica Dark Mode ---
+        // --- BASE DE DADOS DE TUTORIAIS ---
+        const tutorials = {
+            "Maltego": "<p><strong>O que é:</strong> Cria gráficos de relacionamentos entre dados.</p><ul><li>Use 'Transforms' para expandir dados (Ex: Email -> Redes Sociais).</li><li>Requer cadastro e instalação do cliente Java.</li><li>A versão CE (Community) é gratuita mas limitada.</li></ul>",
+            "SpiderFoot": "<p><strong>O que é:</strong> Automação que consulta centenas de fontes.</p><ul><li>Inicie um 'Scan' inserindo o alvo (Domínio, IP, Email).</li><li>Aguarde o processamento (pode demorar).</li><li>Visualize na aba 'Correlations' para ver conexões perigosas.</li></ul>",
+            "Recon-ng": "<p><strong>O que é:</strong> Framework via linha de comando (estilo Metasploit).</p><code>recon-ng</code><ul><li>Adicione chaves de API: <code>keys add [api_name] [key]</code></li><li>Busque módulos: <code>modules search [termo]</code></li><li>Execute: <code>run</code></li></ul>",
+            "Shodan": "<p><strong>O que é:</strong> Busca dispositivos IoT.</p><ul><li>Filtre por país: <code>country:BR</code></li><li>Filtre por organização: <code>org:\"Vivo\"</code></li><li>Busque vulnerabilidades: <code>has_vuln:true</code></li><li>Busque câmeras: <code>webcamxp</code></li></ul>",
+            "GreyNoise": "<p><strong>O que é:</strong> Identifica scanners massivos.</p><ul><li>Coloque um IP suspeito na busca.</li><li>Se o GreyNoise disser 'Noise', é provável que seja um bot de varredura automática, e não um ataque direcionado a você especificamente.</li></ul>",
+            "Amass": "<p><strong>O que é:</strong> Mapeamento de ataque externo.</p><ul><li>Uso via terminal: <code>amass enum -d exemplo.com</code></li><li>Ele usa brute-force de DNS e fontes públicas para achar subdomínios que o Google não indexou.</li></ul>",
+            "DNS Dumpster": "<p><strong>O que é:</strong> Mapeamento DNS visual.</p><ul><li>Insira o domínio (ex: facebook.com).</li><li>Analise o 'Mapping Graph' verde.</li><li>Verifique os registros MX (emails) e TXT (verificações de segurança).</li></ul>",
+            "Wayback Machine": "<p><strong>O que é:</strong> Máquina do tempo da internet.</p><ul><li>Insira a URL de um perfil ou site deletado.</li><li>Use a linha do tempo no topo para selecionar o ano (barras pretas indicam capturas).</li><li>Clique na data no calendário (círculo azul/verde).</li></ul>",
+            "Sherlock": "<p><strong>O que é:</strong> Busca username em 300+ sites.</p><ul><li>Instale Python.</li><li>Rode: <code>python3 sherlock user123</code></li><li>Ele listará todas as URLs onde 'user123' existe.</li></ul>",
+            "WhatsMyName": "<p><strong>O que é:</strong> Versão web similar ao Sherlock.</p><ul><li>Digite o username no campo e filtre por categoria (ex: Dating, Tech).</li><li>Os resultados com 'Found' permitem clicar para ver o perfil.</li></ul>",
+            "Hunter.io": "<p><strong>O que é:</strong> Padrão de emails corporativos.</p><ul><li>Digite a empresa (ex: 'microsoft.com').</li><li>Ele mostra o padrão (ex: nome.sobrenome@microsoft.com).</li><li>Indica fontes onde o email apareceu publicamente.</li></ul>",
+            "theHarvester": "<p><strong>O que é:</strong> Coleta passiva de emails.</p><ul><li>Comando: <code>theHarvester -d site.com -b all</code></li><li>O parâmetro <code>-b all</code> busca no Google, Bing, LinkedIn, etc.</li></ul>",
+            "Epieos": "<p><strong>O que é:</strong> Verifica contas vinculadas a email/telefone.</p><ul><li>Insira o email.</li><li>Ele mostra se o email tem conta Google (com foto e avaliações no Maps), Skype, etc., sem notificar o dono.</li></ul>",
+            "Intelligence X": "<p><strong>O que é:</strong> Google da Darknet/Leaks.</p><ul><li>Aceita buscar por Email, IP, Bitcoin Address, Domain.</li><li>Muitos resultados são pagos, mas as 'previews' já dão muita informação.</li></ul>",
+            "Have I Been Pwned": "<p><strong>O que é:</strong> Checagem de segurança pessoal.</p><ul><li>Digite seu email.</li><li>Se a tela ficar vermelha, desça para ver em qual vazamento (ex: LinkedIn 2016) seus dados estavam.</li></ul>",
+            "Google Dorks DB": "<p><strong>O que é:</strong> Comandos avançados.</p><ul><li>Exemplo: <code>site:br filetype:pdf "cpf"</code> (Busca PDFs com a palavra CPF em sites .br).</li><li>O site lista milhares de combinações prontas.</li></ul>",
+            "DeHashed": "<p><strong>O que é:</strong> Buscador de senhas vazadas (Pago/Freemium).</p><ul><li>Permite buscar senha '123456' e ver quem usa.</li><li>Ótimo para pivotar (descobrir outros emails da mesma pessoa).</li></ul>",
+            "Yandex Images": "<p><strong>O que é:</strong> Reconhecimento facial russo.</p><ul><li>Suba a foto de um rosto (mesmo recortada).</li><li>O algoritmo é mais agressivo que o do Google, achando perfis em redes sociais menores.</li></ul>",
+            "TinEye": "<p><strong>O que é:</strong> Rastreio de origem.</p><ul><li>Ideal para saber se uma foto de perfil é fake (roubada de banco de imagens).</li><li>Permite filtrar por data ('Oldest') para achar a primeira vez que a foto apareceu.</li></ul>",
+            "Google Earth Pro": "<p><strong>O que é:</strong> Geo-inteligência.</p><ul><li>Baixe a versão Desktop Pro.</li><li>Use o ícone de 'Relógio' no menu superior para ver imagens de satélite antigas da mesma região.</li></ul>",
+            "ZoomEye": "<p><strong>O que é:</strong> Alternativa chinesa ao Shodan.</p><ul><li>Muitas vezes acha dispositivos na Ásia que o Shodan perde.</li><li>Usa dorks próprias como <code>app:"Apache" +country:"CN"</code>.</li></ul>",
+            "Namechk": "<p><strong>O que é:</strong> Disponibilidade de marca.</p><ul><li>Verifica se o user está livre. Se estiver 'Ocupado' em tudo, é provável que seja uma pessoa famosa ou marca ativa.</li></ul>"
+        };
+
+        // --- LÓGICA DO MODAL ---
+        const modal = document.getElementById('tutorial-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModal = document.getElementById('close-modal');
+
+        // Adicionar evento a todos os ícones de ajuda
+        document.querySelectorAll('.help-icon-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evita clicar no card
+                const card = btn.closest('.tool-card');
+                const title = card.querySelector('.card-title').textContent.trim();
+                
+                // Carregar conteúdo
+                if (tutorials[title]) {
+                    modalTitle.textContent = title;
+                    modalBody.innerHTML = tutorials[title];
+                    modal.style.display = 'flex';
+                } else {
+                    modalTitle.textContent = title;
+                    modalBody.innerHTML = "<p>Tutorial em breve.</p>";
+                    modal.style.display = 'flex';
+                }
+            });
+        });
+
+        // Fechar Modal
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // --- LÓGICA DARK MODE ---
         const themeBtn = document.getElementById('theme-toggle');
         const icon = themeBtn.querySelector('i');
         
@@ -531,7 +470,6 @@
         themeBtn.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            
             if (isDark) {
                 icon.classList.replace('fa-moon', 'fa-sun');
                 localStorage.setItem('theme', 'dark');
@@ -541,18 +479,16 @@
             }
         });
 
-        // --- Lógica de Busca ---
+        // --- LÓGICA BUSCA E FILTROS ---
         const searchInput = document.getElementById('search-input');
         const cards = document.querySelectorAll('.tool-card');
 
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            
             cards.forEach(card => {
                 const title = card.querySelector('.card-title').textContent.toLowerCase();
                 const desc = card.querySelector('.card-desc').textContent.toLowerCase();
                 const tag = card.querySelector('.card-tag').textContent.toLowerCase();
-                
                 if (title.includes(term) || desc.includes(term) || tag.includes(term)) {
                     card.style.display = 'flex';
                 } else {
@@ -561,11 +497,9 @@
             });
         });
 
-        // --- Lógica de Categorias ---
         function filterCategory(category) {
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-
             cards.forEach(card => {
                 const cardCat = card.getAttribute('data-category');
                 if (category === 'all' || cardCat === category) {
