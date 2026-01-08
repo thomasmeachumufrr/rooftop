@@ -1,498 +1,128 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Angry Shapes - Versão Turbo</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-        }
-
-        #gameCanvas {
-            display: block;
-        }
-
-        #ui-layer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            pointer-events: none;
-        }
-
-        .score {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            text-shadow: 2px 2px 0px white;
-        }
-
-        #controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        button {
-            background-color: #ff4757;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0 4px #c0392b;
-            font-weight: bold;
-        }
-
-        button:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 #c0392b;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>OSINT Arsenal – Tudo em 1 clique</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{--bg:#111;--card:#1c1c1c;--text:#0f0;--accent:#0ff}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    h1{text-align:center;margin:20px 0;font-size:2em}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px;padding:20px}
+    .card{background:var(--card);border-radius:8px;text-align:center;padding:15px;transition:.3s}
+    .card:hover{transform:scale(1.05);box-shadow:0 0 10px var(--accent)}
+    .card img{width:48px;height:48px;margin-bottom:8px}
+    .card a{color:var(--text);text-decoration:none;font-size:.9em}
+  </style>
 </head>
 <body>
-
-    <div id="ui-layer">
-        <div class="score">Placar: <span id="scoreVal">0</span> | Inimigos: <span id="pigsVal">3</span></div>
+  <h1>OSINT Arsenal</h1>
+  <div class="grid">
+    <!-- 1 -->
+    <div class="card">
+      <a href="https://www.maltego.com" target="_blank">
+        <img src="https://www.maltego.com/favicon.ico" alt="Maltego">
+        <div>Maltego</div>
+      </a>
     </div>
-
-    <div id="controls">
-        <button onclick="resetLevel()">Reiniciar Nível (R)</button>
+    <!-- 2 -->
+    <div class="card">
+      <a href="https://www.spiderfoot.net" target="_blank">
+        <img src="https://www.spiderfoot.net/favicon.ico" alt="SpiderFoot">
+        <div>SpiderFoot</div>
+      </a>
     </div>
-
-    <canvas id="gameCanvas"></canvas>
-
-<script>
-    // --- CONFIGURAÇÃO INICIAL ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    let width, height;
-    
-    function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // --- VARIÁVEIS DE JOGO ---
-    let score = 0;
-    const GROUND_HEIGHT = 100;
-    const GRAVITY = 0.45; // Gravidade levemente reduzida para voar mais longe
-    const FRICTION = 0.98; 
-    const BOUNCE = 0.5; 
-    
-    let slingX = 200;
-    let slingY = 0; 
-
-    // --- CLASSES ---
-
-    class Entity {
-        constructor(x, y, color) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-            this.vx = 0;
-            this.vy = 0;
-            this.alive = true;
-        }
-    }
-
-    class Bird extends Entity {
-        constructor(x, y) {
-            super(x, y, '#ff4757'); 
-            this.radius = 15;
-            this.isDragging = false;
-            this.isFlying = false;
-        }
-
-        draw() {
-            if (!this.alive) return;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // Olho (olhando para a direita)
-            ctx.beginPath();
-            ctx.arc(this.x + 5, this.y - 5, 4, 0, Math.PI * 2);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(this.x + 7, this.y - 5, 1.5, 0, Math.PI * 2);
-            ctx.fillStyle = 'black';
-            ctx.fill();
-            
-            // Bico
-            ctx.beginPath();
-            ctx.moveTo(this.x + 5, this.y + 2);
-            ctx.lineTo(this.x + 18, this.y + 5);
-            ctx.lineTo(this.x + 5, this.y + 8);
-            ctx.fillStyle = '#ffa502';
-            ctx.fill();
-
-            // Sobrancelha (Raiva)
-            ctx.beginPath();
-            ctx.moveTo(this.x, this.y - 12);
-            ctx.lineTo(this.x + 10, this.y - 8);
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        }
-
-        update() {
-            if (this.isFlying) {
-                this.vy += GRAVITY;
-                this.vx *= 0.998; // Menos resistência do ar
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Colisão com chão
-                if (this.y + this.radius > height - GROUND_HEIGHT) {
-                    this.y = height - GROUND_HEIGHT - this.radius;
-                    this.vy *= -BOUNCE;
-                    this.vx *= FRICTION;
-                    
-                    if (Math.abs(this.vx) < 0.1) this.vx = 0;
-                    if (Math.abs(this.vy) < 0.5) this.vy = 0;
-                }
-                
-                // Colisão com paredes
-                if (this.x + this.radius > width || this.x - this.radius < 0) {
-                    this.vx *= -BOUNCE;
-                    this.x = this.x > width ? width - this.radius : this.radius;
-                }
-            }
-        }
-    }
-
-    class Pig extends Entity {
-        constructor(x, y) {
-            super(x, y, '#2ed573');
-            this.radius = 16;
-        }
-
-        draw() {
-            if (!this.alive) return;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-            ctx.strokeStyle = '#2f3542';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.ellipse(this.x, this.y + 2, 7, 5, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#7bed9f';
-            ctx.fill();
-            
-            // Olhos
-            ctx.fillStyle = 'white';
-            ctx.beginPath(); ctx.arc(this.x - 5, this.y - 6, 4, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(this.x + 5, this.y - 6, 4, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = 'black';
-            ctx.beginPath(); ctx.arc(this.x - 5, this.y - 6, 1.5, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(this.x + 5, this.y - 6, 1.5, 0, Math.PI*2); ctx.fill();
-        }
-    }
-
-    class Block extends Entity {
-        constructor(x, y, w, h) {
-            super(x, y, '#e1b12c');
-            this.w = w;
-            this.h = h;
-            this.hp = 20;
-        }
-
-        draw() {
-            if (!this.alive) return;
-            ctx.fillStyle = this.hp < 10 ? '#cd6133' : this.color; 
-            ctx.fillRect(this.x, this.y, this.w, this.h);
-            ctx.strokeStyle = '#5d4037';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(this.x, this.y, this.w, this.h);
-            
-            // X na madeira
-            ctx.beginPath();
-            ctx.moveTo(this.x, this.y);
-            ctx.lineTo(this.x + this.w, this.y + this.h);
-            ctx.moveTo(this.x + this.w, this.y);
-            ctx.lineTo(this.x, this.y + this.h);
-            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-            ctx.stroke();
-        }
-    }
-
-    // --- INSTÂNCIAS ---
-    let bird;
-    let pigs = [];
-    let blocks = [];
-    let particles = [];
-
-    function resetLevel() {
-        score = 0;
-        slingY = height - GROUND_HEIGHT - 120; // Estilingue um pouco mais alto
-        
-        bird = new Bird(slingX, slingY);
-        pigs = [];
-        blocks = [];
-        particles = [];
-
-        // Construir Estrutura (Castelo Maior)
-        let startX = width - 450;
-        let groundY = height - GROUND_HEIGHT;
-
-        // Base Esquerda
-        blocks.push(new Block(startX, groundY - 100, 20, 100)); 
-        blocks.push(new Block(startX + 80, groundY - 100, 20, 100)); 
-        blocks.push(new Block(startX - 10, groundY - 110, 120, 10)); // Teto
-
-        // Base Direita
-        blocks.push(new Block(startX + 150, groundY - 100, 20, 100));
-        blocks.push(new Block(startX + 230, groundY - 100, 20, 100));
-        blocks.push(new Block(startX + 140, groundY - 110, 120, 10)); // Teto
-
-        // Segundo Andar (Ponte)
-        blocks.push(new Block(startX + 40, groundY - 120, 170, 10)); // Ponte longa
-
-        // Terceiro Andar
-        blocks.push(new Block(startX + 60, groundY - 180, 10, 60));
-        blocks.push(new Block(startX + 120, groundY - 180, 10, 60));
-        blocks.push(new Block(startX + 180, groundY - 180, 10, 60));
-        blocks.push(new Block(startX + 50, groundY - 190, 150, 10)); // Teto topo
-
-        // Porcos (Posicionados estrategicamente)
-        pigs.push(new Pig(startX + 50, groundY - 40)); 
-        pigs.push(new Pig(startX + 200, groundY - 40));
-        pigs.push(new Pig(startX + 125, groundY - 140)); // Meio
-        pigs.push(new Pig(startX + 125, groundY - 210)); // Topo (Rei)
-
-        updateUI();
-    }
-
-    // --- LÓGICA DE FÍSICA E COLISÃO ---
-    
-    function checkCollisions() {
-        if (!bird.isFlying) return;
-
-        // Colisão Pássaro vs Porcos
-        pigs.forEach(pig => {
-            if (!pig.alive) return;
-            let dx = bird.x - pig.x;
-            let dy = bird.y - pig.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < bird.radius + pig.radius + 5) {
-                // Mata mais fácil agora
-                if (Math.abs(bird.vx) > 1 || Math.abs(bird.vy) > 1) {
-                    pig.alive = false;
-                    score += 500;
-                    createParticles(pig.x, pig.y, pig.color);
-                    bird.vx *= 0.7; // Perde menos velocidade ao bater
-                }
-            }
-        });
-
-        // Colisão Pássaro vs Blocos
-        blocks.forEach(block => {
-            if (!block.alive) return;
-            
-            let testX = bird.x;
-            let testY = bird.y;
-
-            if (bird.x < block.x) testX = block.x;
-            else if (bird.x > block.x + block.w) testX = block.x + block.w;
-
-            if (bird.y < block.y) testY = block.y;
-            else if (bird.y > block.y + block.h) testY = block.y + block.h;
-
-            let distX = bird.x - testX;
-            let distY = bird.y - testY;
-            let distance = Math.sqrt(distX*distX + distY*distY);
-
-            if (distance <= bird.radius) {
-                let impact = Math.abs(bird.vx) + Math.abs(bird.vy);
-                if (impact > 2) { // Mais sensível a dano
-                    block.hp -= impact * 4; // Causa mais dano
-                    if (block.hp <= 0) {
-                        block.alive = false;
-                        score += 100;
-                        createParticles(block.x + block.w/2, block.y + block.h/2, '#deb887');
-                    }
-                    bird.vx *= -0.6; // Ricochete um pouco mais forte
-                    bird.vy *= -0.6;
-                } else {
-                    bird.vx = 0; 
-                }
-            }
-        });
-    }
-
-    function createParticles(x, y, color) {
-        for(let i=0; i<12; i++) {
-            particles.push({
-                x: x,
-                y: y,
-                vx: (Math.random() - 0.5) * 15, // Explosão maior
-                vy: (Math.random() - 0.5) * 15,
-                life: 1.0,
-                color: color
-            });
-        }
-    }
-
-    function updateUI() {
-        document.getElementById('scoreVal').innerText = score;
-        const pigsAlive = pigs.filter(p => p.alive).length;
-        document.getElementById('pigsVal').innerText = pigsAlive;
-        
-        if (pigsAlive === 0 && !bird.isFlying && !bird.isDragging) {
-            ctx.font = "bold 60px Segoe UI";
-            ctx.fillStyle = "#ff4757";
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 5;
-            ctx.strokeText("VITÓRIA!", width/2 - 130, height/2);
-            ctx.fillText("VITÓRIA!", width/2 - 130, height/2);
-        }
-    }
-
-    // --- CONTROLE MOUSE/TOQUE ---
-    let isMouseDown = false;
-    // Aumentei o range do elástico
-    const MAX_PULL = 150; 
-
-    canvas.addEventListener('mousedown', (e) => {
-        let dx = e.clientX - bird.x;
-        let dy = e.clientY - bird.y;
-        let dist = Math.sqrt(dx*dx + dy*dy);
-        
-        if (dist < 60 && !bird.isFlying) { 
-            bird.isDragging = true;
-            isMouseDown = true;
-        }
-    });
-
-    canvas.addEventListener('mousemove', (e) => {
-        if (bird.isDragging) {
-            let mouseX = e.clientX;
-            let mouseY = e.clientY;
-            
-            let dx = mouseX - slingX;
-            let dy = mouseY - slingY;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            
-            if (dist > MAX_PULL) {
-                let angle = Math.atan2(dy, dx);
-                bird.x = slingX + Math.cos(angle) * MAX_PULL;
-                bird.y = slingY + Math.sin(angle) * MAX_PULL;
-            } else {
-                bird.x = mouseX;
-                bird.y = mouseY;
-            }
-        }
-    });
-
-    window.addEventListener('mouseup', () => {
-        if (bird.isDragging) {
-            bird.isDragging = false;
-            bird.isFlying = true;
-            
-            let dx = slingX - bird.x;
-            let dy = slingY - bird.y;
-            
-            // MULTIPLICADOR DE FORÇA AUMENTADO (0.15 -> 0.26)
-            bird.vx = dx * 0.26; 
-            bird.vy = dy * 0.26;
-        }
-        isMouseDown = false;
-    });
-
-    window.addEventListener('keydown', (e) => {
-        if(e.key.toLowerCase() === 'r') resetLevel();
-    });
-
-    // --- LOOP PRINCIPAL ---
-    function loop() {
-        ctx.clearRect(0, 0, width, height);
-
-        // Cenário
-        ctx.fillStyle = '#7cfc00'; 
-        ctx.fillRect(0, height - GROUND_HEIGHT, width, GROUND_HEIGHT);
-        ctx.fillStyle = '#654321'; 
-        ctx.fillRect(0, height - GROUND_HEIGHT + 20, width, GROUND_HEIGHT);
-
-        // Estilingue Traseiro
-        ctx.lineWidth = 8;
-        ctx.beginPath();
-        ctx.moveTo(slingX, slingY);
-        ctx.lineTo(slingX - 15, height - GROUND_HEIGHT);
-        ctx.lineTo(slingX + 15, height - GROUND_HEIGHT);
-        ctx.fillStyle = '#8B4513';
-        ctx.fill();
-
-        // Elástico Traseiro
-        if (bird.isDragging) {
-            ctx.beginPath();
-            ctx.moveTo(slingX - 15, slingY);
-            ctx.lineTo(bird.x - 10, bird.y);
-            ctx.strokeStyle = '#301808';
-            ctx.stroke();
-        }
-
-        blocks.forEach(b => b.draw());
-        pigs.forEach(p => p.draw());
-
-        // Elástico Dianteiro (passa na frente do pássaro)
-        if (bird.isDragging) {
-            ctx.beginPath();
-            ctx.moveTo(slingX + 15, slingY);
-            ctx.lineTo(bird.x + 10, bird.y);
-            ctx.strokeStyle = '#522915';
-            ctx.stroke();
-        }
-
-        bird.update();
-        bird.draw();
-        
-        checkCollisions();
-        updateUI();
-
-        for (let i = particles.length - 1; i >= 0; i--) {
-            let p = particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.2; 
-            p.life -= 0.03; 
-            
-            ctx.globalAlpha = p.life;
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1.0;
-
-            if (p.life <= 0) particles.splice(i, 1);
-        }
-
-        requestAnimationFrame(loop);
-    }
-
-    resetLevel();
-    loop();
-
-</script>
+    <!-- 3 -->
+    <div class="card">
+      <a href="https://github.com/laramies/theHarvester" target="_blank">
+        <img src="https://github.com/favicon.ico" alt="theHarvester">
+        <div>theHarvester</div>
+      </a>
+    </div>
+    <!-- 4 -->
+    <div class="card">
+      <a href="https://www.shodan.io" target="_blank">
+        <img src="https://www.shodan.io/static/img/favicon.png" alt="Shodan">
+        <div>Shodan</div>
+      </a>
+    </div>
+    <!-- 5 -->
+    <div class="card">
+      <a href="https://www.greynoise.io" target="_blank">
+        <img src="https://www.greynoise.io/favicon.ico" alt="GreyNoise">
+        <div>GreyNoise</div>
+      </a>
+    </div>
+    <!-- 6 -->
+    <div class="card">
+      <a href="https://intelx.io" target="_blank">
+        <img src="https://intelx.io/favicon.ico" alt="Intelligence X">
+        <div>Intelligence X</div>
+      </a>
+    </div>
+    <!-- 7 -->
+    <div class="card">
+      <a href="https://github.com/lanmaster53/recon-ng" target="_blank">
+        <img src="https://github.com/favicon.ico" alt="Recon-ng">
+        <div>Recon-ng</div>
+      </a>
+    </div>
+    <!-- 8 -->
+    <div class="card">
+      <a href="https://github.com/owasp-amass/amass" target="_blank">
+        <img src="https://github.com/favicon.ico" alt="Amass">
+        <div>Amass</div>
+      </a>
+    </div>
+    <!-- 9 -->
+    <div class="card">
+      <a href="https://hunter.io" target="_blank">
+        <img src="https://hunter.io/favicon.ico" alt="Hunter">
+        <div>Hunter.io</div>
+      </a>
+    </div>
+    <!-- 10 -->
+    <div class="card">
+      <a href="https://www.exploit-db.com/google-hacking-database" target="_blank">
+        <img src="https://www.exploit-db.com/favicon.ico" alt="Google Dorks">
+        <div>Google Dorks</div>
+      </a>
+    </div>
+    <!-- 11 -->
+    <div class="card">
+      <a href="https://www.dehashed.com" target="_blank">
+        <img src="https://www.dehashed.com/favicon.ico" alt="DeHashed">
+        <div>DeHashed</div>
+      </a>
+    </div>
+    <!-- 12 -->
+    <div class="card">
+      <a href="https://www.zoomeye.org" target="_blank">
+        <img src="https://www.zoomeye.org/favicon.ico" alt="ZoomEye">
+        <div>ZoomEye</div>
+      </a>
+    </div>
+    <!-- 13 -->
+    <div class="card">
+      <a href="https://yandex.com/images/" target="_blank">
+        <img src="https://yastatic.net/iconostasis/_/5vP6niRDz7VIEKGiyK5Fz3L3v2L.png" alt="Yandex">
+        <div>Yandex Images</div>
+      </a>
+    </div>
+    <!-- 14 -->
+    <div class="card">
+      <a href="https://whatsmyname.app" target="_blank">
+        <img src="https://whatsmyname.app/favicon.ico" alt="WhatsMyName">
+        <div>WhatsMyName</div>
+      </a>
+    </div>
+    <!-- 15 -->
+    <div class="card">
+      <a href="https://epieos.com" target="_blank">
+        <img src="https://epieos.com/favicon.ico" alt="Epieos">
+        <div>Epieos</div>
+      </a>
+    </div>
+  </div>
 </body>
 </html>
