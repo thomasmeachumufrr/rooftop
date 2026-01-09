@@ -150,6 +150,7 @@
         <button class="filter-btn" data-cat="Network">Rede/IoT</button>
         <button class="filter-btn" data-cat="Leaks">Leaks</button>
         <button class="filter-btn" data-cat="Images">Imagens/Mapas</button>
+        <button class="filter-btn" data-cat="Utilities">Utilidades</button>
     </div>
 
     <div class="grid" id="toolsGrid">
@@ -161,7 +162,7 @@
                 <div class="card-title">Maltego</div>
             </div>
             <span class="tag">Framework</span>
-            <p class="desc">Ferramenta gráfica para análise de links e mineração de dados.</p>
+            <p class="desc">Ferramenta gráfica para análise de links e mineração de dados em tempo real.</p>
             <a href="https://www.maltego.com" target="_blank" class="btn-link">Acessar</a>
         </div>
 
@@ -396,6 +397,61 @@
             <a href="https://www.google.com/earth/versions/" target="_blank" class="btn-link">Acessar</a>
         </div>
 
+        <div class="card" data-cat="Utilities">
+            <button class="help-btn" onclick="openTutorial('CyberChef')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                <div class="card-title">CyberChef</div>
+            </div>
+            <span class="tag">Utility</span>
+            <p class="desc">O "Canivete Suíço" para criptografia, codificação e análise de dados.</p>
+            <a href="https://gchq.github.io/CyberChef/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Images">
+            <button class="help-btn" onclick="openTutorial('Jeffrey Exif')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-camera"></i></div>
+                <div class="card-title">Jeffrey Exif</div>
+            </div>
+            <span class="tag">Metadata</span>
+            <p class="desc">Extraia metadados ocultos de fotos (GPS, Data, Câmera) sem instalar nada.</p>
+            <a href="http://exif.regex.info/exif.cgi" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Images">
+            <button class="help-btn" onclick="openTutorial('WiGLE')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-wifi"></i></div>
+                <div class="card-title">WiGLE</div>
+            </div>
+            <span class="tag">Geo / Wifi</span>
+            <p class="desc">Banco de dados mundial de redes Wi-Fi e torres de celular para geolocalização.</p>
+            <a href="https://wigle.net/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Network">
+            <button class="help-btn" onclick="openTutorial('BuiltWith')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-code"></i></div>
+                <div class="card-title">BuiltWith</div>
+            </div>
+            <span class="tag">Tech Stack</span>
+            <p class="desc">Descubra quais tecnologias, servidores e frameworks um site está usando.</p>
+            <a href="https://builtwith.com/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
+        <div class="card" data-cat="Leaks">
+            <button class="help-btn" onclick="openTutorial('VirusTotal')"><i class="fa-regular fa-circle-question"></i></button>
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-biohazard"></i></div>
+                <div class="card-title">VirusTotal</div>
+            </div>
+            <span class="tag">Threat Intel</span>
+            <p class="desc">Analise arquivos suspeitos, domínios, IPs e URLs para detectar malware.</p>
+            <a href="https://www.virustotal.com/" target="_blank" class="btn-link">Acessar</a>
+        </div>
+
     </div>
 
     <div class="modal-bg" id="modalBg">
@@ -432,7 +488,12 @@
             "TinEye": "<p>Origem da Foto.</p><ul><li>Descubra se a foto de perfil é falsa (banco de imagens) ou onde mais ela aparece.</li></ul>",
             "Google Earth Pro": "<p>Geo-Inteligência.</p><ul><li>Use o ícone de 'Relógio' para ver imagens de satélite de anos passados.</li></ul>",
             "ZoomEye": "<p>Busca IoT (China).</p><ul><li>Similar ao Shodan, mas acha dispositivos diferentes na Ásia.</li></ul>",
-            "Namechk": "<p>Marca Pessoal.</p><ul><li>Verifica se o usuário está livre na maioria dos sites.</li></ul>"
+            "Namechk": "<p>Marca Pessoal.</p><ul><li>Verifica se o usuário está livre na maioria dos sites.</li></ul>",
+            "CyberChef": "<p>Manipulação de dados.</p><ul><li>Cole um texto codificado (ex: Base64) no input.</li><li>Arraste a 'receita' (ex: From Base64) para o meio.</li><li>O resultado aparece instantaneamente.</li></ul>",
+            "Jeffrey Exif": "<p>Análise Forense de Imagem.</p><ul><li>Faça upload de uma foto original.</li><li>Veja se há coordenadas GPS (Latitude/Longitude) escondidas.</li></ul>",
+            "WiGLE": "<p>Geolocalização Wi-Fi.</p><ul><li>Crie uma conta gratuita.</li><li>Vá em 'View' > 'Basic Search'.</li><li>Digite o nome da Wi-Fi (SSID) para ver onde ela existe no mapa mundial.</li></ul>",
+            "BuiltWith": "<p>Perfil Tecnológico.</p><ul><li>Insira o domínio do alvo.</li><li>Descubra servidor, CMS (WordPress), Analytics e plugins usados.</li></ul>",
+            "VirusTotal": "<p>Segurança.</p><ul><li>Não abra arquivos suspeitos. Suba no VT.</li><li>Veja a aba 'Relations' para ver conexões maliciosas.</li></ul>"
         };
 
         // 2. LÓGICA DO TEMA (DARK MODE)
@@ -507,7 +568,7 @@
         const modalTitle = document.getElementById('modalTitle');
         const modalBody = document.getElementById('modalBody');
 
-        // Função chamada diretamente pelo onclick no HTML (Maneira mais segura)
+        // Função chamada diretamente pelo onclick no HTML
         function openTutorial(toolName) {
             modalTitle.innerText = toolName;
             
